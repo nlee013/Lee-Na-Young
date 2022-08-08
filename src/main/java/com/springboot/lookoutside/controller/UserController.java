@@ -32,11 +32,11 @@ public class UserController {
 	//회원가입
 	@PostMapping("/sign-up")
 	public ResponseDto<Integer> signUp(@RequestBody User user) { // json 타입일시 RequestBody
-		System.out.println("UserController : signUp 호출");
+		System.out.println("UserController : signUp 호출 : 회원가입");
 		userService.signUp(user);
 		return new ResponseDto<Integer>(HttpStatus.OK.value(),1); // Java 오브젝트를 Json으로 변경
 	}
-	/*
+	/* 시큐리티로 이관함
 	//로그인
 	@PostMapping("/sign-in")
 	public ResponseDto<Integer> signIn(@RequestBody User user, HttpSession session) { 
@@ -59,14 +59,25 @@ public class UserController {
 		return new ResponseDto<Integer>(HttpStatus.OK.value(),1);
 	}
 	
-	/*
 	//닉네임 중복확인
+	@GetMapping("/{useId}")
+	public ResponseDto<Integer> useIdCheck(String useId) {
+		System.out.println("UserController : useIdCheck 호출");
+		userService.useIdCheck(useId);
+		return new ResponseDto<Integer>(HttpStatus.OK.value(),1);
+	}
   
 	//ID 중복확인
 	
 	
 	
 	//회원정보 수정
+	@PutMapping
+	public ResponseDto<Integer> update(@RequestBody User user) {
+		userService.updateUser(user);
+		return new ResponseDto<Integer>(HttpStatus.OK.value(),1);
+	}
+	/*
 	@Transactional //함수 종료시 자동 commit
 	@PutMapping("/{use_no}")
 	public User updateUser(@PathVariable int use_no, @RequestBody User requestUser) { //json 데이터를 요청 => java Object로 변환 (RequestBody)

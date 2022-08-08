@@ -25,4 +25,6 @@ public interface UserRepository extends JpaRepository<User, Integer>{ // <Å×ÀÌºí
 	*/
 	
 	Optional<User> findByUseId(String useId);
+	
+	
 }
