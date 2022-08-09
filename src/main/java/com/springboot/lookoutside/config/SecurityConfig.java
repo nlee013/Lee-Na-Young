@@ -38,7 +38,7 @@ public class SecurityConfig {
         	.csrf().disable() // csrf 토큰 비활성화 (테스트시 비활성화)
 	        .authorizeRequests()
 				.antMatchers("/user/**").permitAll()// user로 들어오는 경로 모두 허용
-				//.antMatchers("/manager/**").hasRole("ROLE_admin") // Admin만 가능
+				.antMatchers("/manager/**").hasRole("ADMIN") // Admin만 가능
 				.anyRequest().authenticated() // 다른 요청은 인증이 되어야한다.
         	.and()
         		.formLogin()
