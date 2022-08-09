@@ -8,23 +8,31 @@ import org.springframework.stereotype.Repository;
 
 import com.springboot.lookoutside.domain.User;
 
-//DAOÀÇ ±â´É
-//ÀÚµ¿ Beanµî·Ï
+//DAOì˜ ê¸°ëŠ¥
+//ìë™ Beanë“±ë¡
 @Repository
-public interface UserRepository extends JpaRepository<User, Integer>{ // <Å×ÀÌºí¸í, PKÀÇ Å¸ÀÔ>
+public interface UserRepository extends JpaRepository<User, Integer>{ // <í…Œì´ë¸”ëª…, PKì˜ íƒ€ì…>
 
-	//JPA Naming Àü·«
+	//JPA Naming ì „ëµ
 	// SELECT * FROM user where useId = ?(useId) AND usePw = ?(usePw);
 	// User findByUseIdAndUsePw(String useId, String usePw);
 
 	
-	//¾Æ·¡Ã³·³ ÇØµµµÈ´Ù
+	//ì•„ë˜ì²˜ëŸ¼ í•´ë„ëœë‹¤
 	/*
 	@Query(value="SELECT * FROM user WHERE use_id = ? AND use_pw = ?", nativeQuery =true)
 	User singIn(String use_id, String use_pw);
 	*/
 	
 	Optional<User> findByUseId(String useId);
+	Optional<User> findByUseEmail(String useEmail);
+	
+	boolean existsByUseId(String useId);
+	boolean existsByUseNick(String useNick);
+	Integer deleteByUseId(String useId);
+	
+	@Query(value = "select useId from user where useEmail = ?1" , nativeQuery =true)
+	String myId(String useEmail);
 	
 	
 }

@@ -3,6 +3,8 @@ package com.springboot.lookoutside.Service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,11 +12,11 @@ import org.springframework.transaction.annotation.Transactional;
 import com.springboot.lookoutside.domain.User;
 import com.springboot.lookoutside.repository.UserRepository;
 
-//¼­ºñ½º ¾²´Â ÀÌÀ¯
-//Æ®·£Àè¼Ç °ü¸®
+//ì„œë¹„ìŠ¤ ì“°ëŠ” ì´ìœ 
+//íŠ¸ëœì­ì…˜ ê´€ë¦¬
 //
 
-@Service //½ºÇÁ¸µÀÌ ÄÄÆ÷³ÍÆ® ½ºÄµÀ» ÅëÇØ¼­ Bean¿¡ µî·ÏÀ» ÇØÁØ´Ù. IoC
+@Service //ìŠ¤í”„ë§ì´ ì»´í¬ë„ŒíŠ¸ ìŠ¤ìº”ì„ í†µí•´ì„œ Beanì— ë“±ë¡ì„ í•´ì¤€ë‹¤. IoC
 public class UserService {
 
 	@Autowired
@@ -23,18 +25,18 @@ public class UserService {
 	@Autowired
 	private BCryptPasswordEncoder encoder;
 	
-	//È¸¿ø°¡ÀÔ
+	//íšŒì›ê°€ì…
 	@Transactional
 	public void signUp(User user) {
-		String originUsePw = user.getUsePw(); // ¿øº» Pw
-		String encUsePw = encoder.encode(originUsePw); // ÇØ½¬½ÃÅ² Pw
+		String originUsePw = user.getUsePw(); // ì›ë³¸ Pw
+		String encUsePw = encoder.encode(originUsePw); // í•´ì‰¬ì‹œí‚¨ Pw
 		user.setUsePw(encUsePw);
-		userRepository.save(user); //ÇÏ³ªÀÇ Æ®·£Àè¼Ç ¾µ¼öµµ ÀÖÀ¸³ª ¿©·¯°³µµ °¡´É
+		userRepository.save(user); //í•˜ë‚˜ì˜ íŠ¸ëœì­ì…˜ ì“¸ìˆ˜ë„ ìˆìœ¼ë‚˜ ì—¬ëŸ¬ê°œë„ ê°€ëŠ¥
 	
 	}
 	
 	/*
-	@Transactional(readOnly = true) // select ½Ã Æ®·£Àè¼Ç ½ÃÀÛ, ¼­ºñ½º Á¾·á½Ã¿¡ Æ®·£Àè¼Ç Á¾·á ( Á¤ÇÕ¼º À¯Áö )
+	@Transactional(readOnly = true) // select ì‹œ íŠ¸ëœì­ì…˜ ì‹œì‘, ì„œë¹„ìŠ¤ ì¢…ë£Œì‹œì— íŠ¸ëœì­ì…˜ ì¢…ë£Œ ( ì •í•©ì„± ìœ ì§€ )
 	public User signIn(User user) {
 		
 		return userRepository.findByUseIdAndUsePw(user.getUseId(), user.getUsePw());
@@ -42,42 +44,73 @@ public class UserService {
 	}
 	*/
 	
-	//È¸¿ø ¸ñ·Ï Á¶È¸
-	public List<User> userList() {
+	//íšŒì› ëª©ë¡ ì¡°íšŒ
+	public Page<User> userList(Pageable pageable) {
 		
-		List<User> user = userRepository.findAll();
+		Page<User> user = userRepository.findAll(pageable);
 		
 		return user;
 	}
 	
-	//Áßº¹È®ÀÎ
-	public void useIdCheck(String useId) {
-		userRepository.findByUseId(useId);
+	//Id ì¤‘ë³µí™•ì¸
+	@Transactional
+	public boolean useIdCheck(String useId) {
+		return userRepository.existsByUseId(useId);
 	}
 	
-	//È¸¿øÁ¤º¸¼öÁ¤
+	//Nick ì¤‘ë³µí™•ì¸
+	@Transactional
+	public boolean useNickCheck(String useNick) {
+		return userRepository.existsByUseNick(useNick);
+	}
+	
+	//Id ì°¾ê¸°
+	@Transactional
+	public String findMyId(String useEmail) {
+		String myId = userRepository.myId(useEmail);
+		if(myId == null) {
+			myId = "í•´ë‹¹ Emailë¡œ ê°€ì…ëœ IDê°€ ì¡´ì¬í•˜ì§€ì•ŠìŠµë‹ˆë‹¤.";
+		}
+		return myId;
+	}
+	
+	//íšŒì› ì‚­ì œ
+	@Transactional
+	public String deleteUser(String useId) {
+		
+		userRepository.findByUseId(useId).orElseThrow(() -> { 
+			return new IllegalArgumentException("ì‚­ì œì— ì‹¤íŒ¨í•˜ì˜€ìŠµë‹ˆë‹¤. í•´ë‹¹ idëŠ” DBì— ì—†ìŠµë‹ˆë‹¤.");
+		});
+		
+		userRepository.deleteByUseId(useId);
+		return "íšŒì› ì‚­ì œ ì™„ë£Œ";
+		
+	}
+	
+	//íšŒì›ì •ë³´ìˆ˜ì •
 	@Transactional
 	public void updateUser(User user) {
-		//¼öÁ¤½Ã¿¡´Â ¿µ¼Ó¼º ÄÁÅØ½ºÆ® User ¿ÀºêÁ§Æ®¸¦ ¿µ¼ÓÈ­½ÃÅ°°í, ¿µ¼ÓÈ­µÈ User ¿ÀºêÁ§Æ®¸¦ ¼öÁ¤
-		// select¸¦ ÇØ¼­ User¿ÀºêÁ§Æ®¸¦ DB·Î ºÎÅÍ °¡Á®¿À´Â ÀÌÀ¯´Â ¿µ¼ÓÈ­¸¦ ÇÏ±âÀ§ÇÔ
-		// ¿µ¼ÓÈ­µÈ ¿ÀºêÁ§Æ®¸¦ º¯°æÇÏ¸é ÀÚµ¿À¸·Î DB¿¡ update¹® ½ÇÇà
-		//User persistance = userRepository.findByUseId(user.getUseId()).orElseThrow(() -> { //user.getUserId -> ¼¼¼Ç¿¡ ¿Ã¶ó¿ÍÀÖ´Â IdÀÌ¿ë
-		User persistance = userRepository.findByUseId("id").orElseThrow(() -> { //Å×½ºÆ®¿ë
-			return new IllegalArgumentException("È¸¿øÃ£±â ½ÇÆĞ");
+		//ìˆ˜ì •ì‹œì—ëŠ” ì˜ì†ì„± ì»¨í…ìŠ¤íŠ¸ User ì˜¤ë¸Œì íŠ¸ë¥¼ ì˜ì†í™”ì‹œí‚¤ê³ , ì˜ì†í™”ëœ User ì˜¤ë¸Œì íŠ¸ë¥¼ ìˆ˜ì •
+		// selectë¥¼ í•´ì„œ Userì˜¤ë¸Œì íŠ¸ë¥¼ DBë¡œ ë¶€í„° ê°€ì ¸ì˜¤ëŠ” ì´ìœ ëŠ” ì˜ì†í™”ë¥¼ í•˜ê¸°ìœ„í•¨
+		// ì˜ì†í™”ëœ ì˜¤ë¸Œì íŠ¸ë¥¼ ë³€ê²½í•˜ë©´ ìë™ìœ¼ë¡œ DBì— updateë¬¸ ì‹¤í–‰
+		//User persistance = userRepository.findByUseId(user.getUseId()).orElseThrow(() -> { //user.getUserId -> ì„¸ì…˜ì— ì˜¬ë¼ì™€ìˆëŠ” Idì´ìš©
+		User persistance = userRepository.findByUseId("id").orElseThrow(() -> { //í…ŒìŠ¤íŠ¸ìš©
+			return new IllegalArgumentException("íšŒì›ì°¾ê¸° ì‹¤íŒ¨");
 		});
-		//ºñ¹Ğ¹øÈ£ ¼öÁ¤
+		//ë¹„ë°€ë²ˆí˜¸ ìˆ˜ì •
 		String rawPassword = user.getUsePw();
 		String encPassword = encoder.encode(rawPassword);
 		persistance.setUsePw(encPassword);
 		
-		//ÀÌ¸ŞÀÏ ¼öÁ¤
+		//ì´ë©”ì¼ ìˆ˜ì •
 		persistance.setUseEmail(user.getUseEmail());
 		
-		//´Ğ³×ÀÓ ¼öÁ¤
+		//ë‹‰ë„¤ì„ ìˆ˜ì •
 		persistance.setUseNick(user.getUseNick());
 		
-		//È¸¿øÁ¤º¸ ÇÔ¼ö Á¾·á½Ã ¼­ºñ½º Á¾·á Æ®·£Àè¼Ç Á¾·á commitÀÌ ÀÚµ¿À¸·Î ½ÇÇà
-		//persistance°¡ º¯È­µÇ¸é ÀÚµ¿À¸·Î update¹® ½ÇÇà
+		//íšŒì›ì •ë³´ í•¨ìˆ˜ ì¢…ë£Œì‹œ ì„œë¹„ìŠ¤ ì¢…ë£Œ íŠ¸ëœì­ì…˜ ì¢…ë£Œ commitì´ ìë™ìœ¼ë¡œ ì‹¤í–‰
+		//persistanceê°€ ë³€í™”ë˜ë©´ ìë™ìœ¼ë¡œ updateë¬¸ ì‹¤í–‰
 	}
+	
 	
 }
