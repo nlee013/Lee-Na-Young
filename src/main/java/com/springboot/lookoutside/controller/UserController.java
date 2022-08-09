@@ -74,6 +74,15 @@ public class UserController {
 		return new ResponseDto<Page<User>>(HttpStatus.OK.value(),user);
 	}
 	
+	//회원 권한 수정
+	@PutMapping("/{useId}")
+	public ResponseDto<Integer> changeRole(@PathVariable String useId) {
+		userService.changeRole(useId);
+		return new ResponseDto<Integer>(HttpStatus.OK.value(),1);
+	}
+	
+	//
+	
 	/*
 	//닉네임 중복확인
 	@GetMapping("/Nickname/{useNick}")
@@ -110,6 +119,13 @@ public class UserController {
 	@PutMapping
 	public ResponseDto<Integer> update(@RequestBody User user) {
 		userService.updateUser(user);
+		return new ResponseDto<Integer>(HttpStatus.OK.value(),1);
+	}
+	
+	//비밀번호변경
+	@PutMapping("/NewPw/{useId}")
+	public ResponseDto<Integer> update(@RequestBody User user, @PathVariable String useId) {
+		userService.newPw(user,useId);
 		return new ResponseDto<Integer>(HttpStatus.OK.value(),1);
 	}
 	

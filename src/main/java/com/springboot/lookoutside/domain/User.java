@@ -46,7 +46,7 @@ public class User {
 	@Column(nullable = false)
 	private Integer useGender;
 	
-	@ColumnDefault("'user'")  //" " 안에 ' ' 넣어줘야한다. 글자시 "'user'"
+	@ColumnDefault("'USER'")  //" " 안에 ' ' 넣어줘야한다. 글자시 "'user'"
 	private String useRole; //Enum을 쓰는게 좋다 (domain) //admin,user,manager
 	 
 	@Column(nullable = false)
