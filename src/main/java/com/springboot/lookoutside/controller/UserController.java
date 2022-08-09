@@ -74,7 +74,7 @@ public class UserController {
 		return new ResponseDto<Page<User>>(HttpStatus.OK.value(),user);
 	}
 	
-	//회원정보 수정
+	//회원 권한 수정
 	@PutMapping("/{useId}")
 	public ResponseDto<Integer> changeRole(@PathVariable String useId) {
 		userService.changeRole(useId);

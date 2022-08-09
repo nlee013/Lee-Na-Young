@@ -87,7 +87,7 @@ public class UserService {
 		
 	}
 	
-	//회원정보수정
+	//회원권한수정
 	@Transactional
 	public void changeRole(String useId) {
 		//수정시에는 영속성 컨텍스트 User 오브젝트를 영속화시키고, 영속화된 User 오브젝트를 수정
