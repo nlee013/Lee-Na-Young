@@ -26,55 +26,55 @@ import com.springboot.lookoutside.dto.ResponseDto;
 import com.springboot.lookoutside.repository.UserRepository;
 
 @RestController
-@RequestMapping("/user") // ÀÎÁõ ¾ø´Â È¸¿øµé ´Ù Á¢¼Ó°¡´É
+@RequestMapping("/user") // ì¸ì¦ ì—†ëŠ” íšŒì›ë“¤ ë‹¤ ì ‘ì†ê°€ëŠ¥
 public class UserController {
 
 	@Autowired 
 	private UserService userService;
 
 	
-	//È¸¿ø°¡ÀÔ
+	//íšŒì›ê°€ì…
 	@PostMapping("/sign-up")
-	public ResponseDto<Integer> signUp(@RequestBody User user) { // json Å¸ÀÔÀÏ½Ã RequestBody
-		System.out.println("UserController : signUp È£Ãâ : È¸¿ø°¡ÀÔ");
+	public ResponseDto<Integer> signUp(@RequestBody User user) { // json íƒ€ì…ì¼ì‹œ RequestBody
+		System.out.println("UserController : signUp í˜¸ì¶œ : íšŒì›ê°€ì…");
 		userService.signUp(user);
-		return new ResponseDto<Integer>(HttpStatus.OK.value(),1); // Java ¿ÀºêÁ§Æ®¸¦ JsonÀ¸·Î º¯°æ
+		return new ResponseDto<Integer>(HttpStatus.OK.value(),1); // Java ì˜¤ë¸Œì íŠ¸ë¥¼ Jsonìœ¼ë¡œ ë³€ê²½
 	}
 	
-	/* ½ÃÅ¥¸®Æ¼·Î ÀÌ°üÇÔ
-	//·Î±×ÀÎ
+	/* ì‹œíë¦¬í‹°ë¡œ ì´ê´€í•¨
+	//ë¡œê·¸ì¸
 	@PostMapping("/sign-in")
 	public ResponseDto<Integer> signIn(@RequestBody User user, HttpSession session) { 
-		System.out.println("UserController : signIn È£Ãâ");
+		System.out.println("UserController : signIn í˜¸ì¶œ");
 		User login = userService.signIn(user);
 		
 		if(login != null) {
 			session.setAttribute("pricipal", login);
 		}
-		return new ResponseDto<Integer>(HttpStatus.OK.value(),1); // data : 1 È£Ãâ½Ã ¼º°ø
+		return new ResponseDto<Integer>(HttpStatus.OK.value(),1); // data : 1 í˜¸ì¶œì‹œ ì„±ê³µ
 	}
 	*/
 	
 	/*
-	//È¸¿ø ¸ñ·Ï Á¶È¸ (ÀüÃÇ)
+	//íšŒì› ëª©ë¡ ì¡°íšŒ (ì „ì³¬)
 	@GetMapping
 	public ResponseDto<Integer> userList() {
-		System.out.println("UserController : userList È£Ãâ");
+		System.out.println("UserController : userList í˜¸ì¶œ");
 		userService.userList();
 		
 		return new ResponseDto<Integer>(HttpStatus.OK.value(),1);
 	}
 	*/
-	//È¸¿ø ¸ñ·Ï ÀüÃ¼ Á¶È¸
+	//íšŒì› ëª©ë¡ ì „ì²´ ì¡°íšŒ
 	@GetMapping
-	public ResponseDto<Page<User>> userList(@PageableDefault(size=3,sort="useNo",direction = Sort.Direction.DESC ) Pageable pageable) { //°¡ÀÔ ÃÖ±Ù¼ø Á¶È¸ 3°³
-		System.out.println("UserController : userList È£Ãâ");
+	public ResponseDto<Page<User>> userList(@PageableDefault(size=3,sort="useNo",direction = Sort.Direction.DESC ) Pageable pageable) { //ê°€ì… ìµœê·¼ìˆœ ì¡°íšŒ 3ê°œ
+		System.out.println("UserController : userList í˜¸ì¶œ");
 		Page<User> user = userService.userList(pageable);
 		
 		return new ResponseDto<Page<User>>(HttpStatus.OK.value(),user);
 	}
 	
-	//È¸¿ø ±ÇÇÑ ¼öÁ¤
+	//íšŒì› ê¶Œí•œ ìˆ˜ì •
 	@PutMapping("/{useId}")
 	public ResponseDto<Integer> changeRole(@PathVariable String useId) {
 		userService.changeRole(useId);
@@ -84,59 +84,59 @@ public class UserController {
 	//
 	
 	/*
-	//´Ğ³×ÀÓ Áßº¹È®ÀÎ
+	//ë‹‰ë„¤ì„ ì¤‘ë³µí™•ì¸
 	@GetMapping("/Nickname/{useNick}")
 	public ResponseDto<Integer> useNickCheck(@PathVariable String useNick) {
-		System.out.println("UserController : useIdCheck È£Ãâ " + useNick);
+		System.out.println("UserController : useIdCheck í˜¸ì¶œ " + useNick);
 		userService.useNickCheck(useNick);
 		return new ResponseDto<Integer>(HttpStatus.OK.value(),1);
 	}
 	
-	//ID Áßº¹È®ÀÎ
+	//ID ì¤‘ë³µí™•ì¸
 	@GetMapping("/Id/{useId}")
 	public ResponseDto<Integer> useIdCheck(@PathVariable String useId) {
-		System.out.println("UserController : useIdCheck È£Ãâ " + useId);
+		System.out.println("UserController : useIdCheck í˜¸ì¶œ " + useId);
 		userService.useIdCheck(useId);
 		return new ResponseDto<Integer>(HttpStatus.OK.value(),1);
 	}
 	*/
 	
-	//´Ğ³×ÀÓ Áßº¹È®ÀÎ
+	//ë‹‰ë„¤ì„ ì¤‘ë³µí™•ì¸
 	@GetMapping("/Nickname/{useNick}")
 	public ResponseDto<Boolean> useNickCheck(@PathVariable String useNick) {
-		System.out.println("UserController : useIdCheck È£Ãâ " + useNick);
-		return new ResponseDto<Boolean>(HttpStatus.OK.value(), userService.useNickCheck(useNick)); // false => ´Ğ³×ÀÓ °¡´É, true => ´Ğ³×ÀÓ ºÒ°¡´É
+		System.out.println("UserController : useIdCheck í˜¸ì¶œ " + useNick);
+		return new ResponseDto<Boolean>(HttpStatus.OK.value(), userService.useNickCheck(useNick)); // false => ë‹‰ë„¤ì„ ê°€ëŠ¥, true => ë‹‰ë„¤ì„ ë¶ˆê°€ëŠ¥
 	}
   
-	//ID Áßº¹È®ÀÎ
+	//ID ì¤‘ë³µí™•ì¸
 	@GetMapping("/Id/{useId}")
 	public ResponseDto<Boolean> useIdCheck(@PathVariable String useId) {
-		System.out.println("UserController : useIdCheck È£Ãâ " + useId);
-		return new ResponseDto<Boolean>(HttpStatus.OK.value(), userService.useIdCheck(useId)); // false => ID °¡´É, true => ID ºÒ°¡´É
+		System.out.println("UserController : useIdCheck í˜¸ì¶œ " + useId);
+		return new ResponseDto<Boolean>(HttpStatus.OK.value(), userService.useIdCheck(useId)); // false => ID ê°€ëŠ¥, true => ID ë¶ˆê°€ëŠ¥
 	}
 	
-	//È¸¿øÁ¤º¸ ¼öÁ¤
+	//íšŒì›ì •ë³´ ìˆ˜ì •
 	@PutMapping
 	public ResponseDto<Integer> update(@RequestBody User user) {
 		userService.updateUser(user);
 		return new ResponseDto<Integer>(HttpStatus.OK.value(),1);
 	}
 	
-	//ºñ¹Ğ¹øÈ£º¯°æ
+	//ë¹„ë°€ë²ˆí˜¸ë³€ê²½
 	@PutMapping("/NewPw/{useId}")
 	public ResponseDto<Integer> update(@RequestBody User user, @PathVariable String useId) {
 		userService.newPw(user,useId);
 		return new ResponseDto<Integer>(HttpStatus.OK.value(),1);
 	}
 	
-	//¾ÆÀÌµğ Ã£±â
+	//ì•„ì´ë”” ì°¾ê¸°
 	@GetMapping("/Email/{useEmail}")
 	public ResponseDto<String> findMyId(@PathVariable String useEmail) {
 		String myId = userService.findMyId(useEmail);
 		return new ResponseDto<String>(HttpStatus.OK.value(), myId);
 	}
 	
-	//È¸¿ø Å»Åğ, »èÁ¦
+	//íšŒì› íƒˆí‡´, ì‚­ì œ
 	@DeleteMapping("/{useId}")
 	public ResponseDto<String> deleteUser(@PathVariable String useId) {
 		String result = userService.deleteUser(useId);
@@ -144,21 +144,21 @@ public class UserController {
 	}
 	
 	/*
-	@Transactional //ÇÔ¼ö Á¾·á½Ã ÀÚµ¿ commit
+	@Transactional //í•¨ìˆ˜ ì¢…ë£Œì‹œ ìë™ commit
 	@PutMapping("/{use_no}")
-	public User updateUser(@PathVariable int use_no, @RequestBody User requestUser) { //json µ¥ÀÌÅÍ¸¦ ¿äÃ» => java Object·Î º¯È¯ (RequestBody)
-		System.out.println("È¸¿ø¹øÈ£ : " + use_no);
-		System.out.println("ºñ¹Ğ¹øÈ£ : " + requestUser.getUse_pw());
-		System.out.println("´Ğ³×ÀÓ : " + requestUser.getUse_nick());
+	public User updateUser(@PathVariable int use_no, @RequestBody User requestUser) { //json ë°ì´í„°ë¥¼ ìš”ì²­ => java Objectë¡œ ë³€í™˜ (RequestBody)
+		System.out.println("íšŒì›ë²ˆí˜¸ : " + use_no);
+		System.out.println("ë¹„ë°€ë²ˆí˜¸ : " + requestUser.getUse_pw());
+		System.out.println("ë‹‰ë„¤ì„ : " + requestUser.getUse_nick());
 		System.out.println("E-mail : " + requestUser.getUse_email());
 		
 		User user = userReposiory.findById(use_no).orElseThrow(()->{
-			return new IllegalArgumentException("¼öÁ¤¿¡ ½ÇÆĞÇÏ¿´½À´Ï´Ù");
+			return new IllegalArgumentException("ìˆ˜ì •ì— ì‹¤íŒ¨í•˜ì˜€ìŠµë‹ˆë‹¤");
 		});
 		user.setUse_pw(requestUser.getUse_pw());
 		user.setUse_email(requestUser.getUse_email());
 		
-//		userReposiory.save(user); //@Transactional ¾²¸é ¾È½áµµ µÈ´Ù.
+//		userReposiory.save(user); //@Transactional ì“°ë©´ ì•ˆì¨ë„ ëœë‹¤.
 		return user; 
 	}
 	*/
