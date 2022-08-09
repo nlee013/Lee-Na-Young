@@ -6,6 +6,10 @@ import javax.servlet.http.HttpSession;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,6 +40,7 @@ public class UserController {
 		userService.signUp(user);
 		return new ResponseDto<Integer>(HttpStatus.OK.value(),1); // Java 오브젝트를 Json으로 변경
 	}
+	
 	/* 시큐리티로 이관함
 	//로그인
 	@PostMapping("/sign-in")
@@ -50,6 +55,7 @@ public class UserController {
 	}
 	*/
 	
+	/*
 	//회원 목록 조회 (전쳬)
 	@GetMapping
 	public ResponseDto<Integer> userList() {
@@ -58,18 +64,47 @@ public class UserController {
 		
 		return new ResponseDto<Integer>(HttpStatus.OK.value(),1);
 	}
+	*/
+	//회원 목록 전체 조회
+	@GetMapping
+	public ResponseDto<Page<User>> userList(@PageableDefault(size=3,sort="useNo",direction = Sort.Direction.DESC ) Pageable pageable) { //가입 최근순 조회 3개
+		System.out.println("UserController : userList 호출");
+		Page<User> user = userService.userList(pageable);
+		
+		return new ResponseDto<Page<User>>(HttpStatus.OK.value(),user);
+	}
 	
+	/*
 	//닉네임 중복확인
-	@GetMapping("/{useId}")
-	public ResponseDto<Integer> useIdCheck(String useId) {
-		System.out.println("UserController : useIdCheck 호출");
+	@GetMapping("/Nickname/{useNick}")
+	public ResponseDto<Integer> useNickCheck(@PathVariable String useNick) {
+		System.out.println("UserController : useIdCheck 호출 " + useNick);
+		userService.useNickCheck(useNick);
+		return new ResponseDto<Integer>(HttpStatus.OK.value(),1);
+	}
+	
+	//ID 중복확인
+	@GetMapping("/Id/{useId}")
+	public ResponseDto<Integer> useIdCheck(@PathVariable String useId) {
+		System.out.println("UserController : useIdCheck 호출 " + useId);
 		userService.useIdCheck(useId);
 		return new ResponseDto<Integer>(HttpStatus.OK.value(),1);
 	}
+	*/
+	
+	//닉네임 중복확인
+	@GetMapping("/Nickname/{useNick}")
+	public ResponseDto<Boolean> useNickCheck(@PathVariable String useNick) {
+		System.out.println("UserController : useIdCheck 호출 " + useNick);
+		return new ResponseDto<Boolean>(HttpStatus.OK.value(), userService.useNickCheck(useNick)); // false => 닉네임 가능, true => 닉네임 불가능
+	}
   
 	//ID 중복확인
-	
-	
+	@GetMapping("/Id/{useId}")
+	public ResponseDto<Boolean> useIdCheck(@PathVariable String useId) {
+		System.out.println("UserController : useIdCheck 호출 " + useId);
+		return new ResponseDto<Boolean>(HttpStatus.OK.value(), userService.useIdCheck(useId)); // false => ID 가능, true => ID 불가능
+	}
 	
 	//회원정보 수정
 	@PutMapping
@@ -77,6 +112,21 @@ public class UserController {
 		userService.updateUser(user);
 		return new ResponseDto<Integer>(HttpStatus.OK.value(),1);
 	}
+	
+	//아이디 찾기
+	@GetMapping("/Email/{useEmail}")
+	public ResponseDto<String> findMyId(@PathVariable String useEmail) {
+		String myId = userService.findMyId(useEmail);
+		return new ResponseDto<String>(HttpStatus.OK.value(), myId);
+	}
+	
+	//회원 탈퇴, 삭제
+	@DeleteMapping("/{useId}")
+	public ResponseDto<String> deleteUser(@PathVariable String useId) {
+		String result = userService.deleteUser(useId);
+		return new ResponseDto<String>(HttpStatus.OK.value(), result);
+	}
+	
 	/*
 	@Transactional //함수 종료시 자동 commit
 	@PutMapping("/{use_no}")
@@ -94,17 +144,6 @@ public class UserController {
 		
 //		userReposiory.save(user); //@Transactional 쓰면 안써도 된다.
 		return user; 
-	}
-	
-	//회원 탈퇴, 삭제
-	@DeleteMapping("/{use_no}")
-	public String deleteUser(@PathVariable int use_no) {
-		try {
-			userReposiory.deleteById(use_no);			
-		} catch (Exception e) {
-			return "삭제에 실패하였습니다. 해당 id는 DB에 없습니다.";
-		}
-		return "회원 삭제";
 	}
 	*/
 	
