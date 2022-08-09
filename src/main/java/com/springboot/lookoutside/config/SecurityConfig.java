@@ -37,13 +37,12 @@ public class SecurityConfig {
         http
         	.csrf().disable() // csrf 토큰 비활성화 (테스트시 비활성화)
 	        .authorizeRequests()
-				.antMatchers("/","/user/**") // user로 들어오는 경로 모두 허용
-				.permitAll()
-				.anyRequest() // 다른 요청은
-				.authenticated() //인증이 되어야한다.
+				.antMatchers("/user/**").permitAll()// user로 들어오는 경로 모두 허용
+				//.antMatchers("/manager/**").hasRole("ROLE_admin") // Admin만 가능
+				.anyRequest().authenticated() // 다른 요청은 인증이 되어야한다.
         	.and()
         		.formLogin()
-        		 // 로그인페이지 주소
+        		 // .loginPage("/login") //로그인페이지 주소
         		.loginProcessingUrl("/user/sign-in") // 스프링 시큐리티가 해당 주소로 요청오는 로그인을 가로채서 대신 로그인 해준다.
         		.defaultSuccessUrl("/"); //성공시 데려갈 주소
         

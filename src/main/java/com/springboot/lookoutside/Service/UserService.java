@@ -3,6 +3,8 @@ package com.springboot.lookoutside.Service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,16 +45,46 @@ public class UserService {
 	*/
 	
 	//회원 목록 조회
-	public List<User> userList() {
+	public Page<User> userList(Pageable pageable) {
 		
-		List<User> user = userRepository.findAll();
+		Page<User> user = userRepository.findAll(pageable);
 		
 		return user;
 	}
 	
-	//중복확인
-	public void useIdCheck(String useId) {
-		userRepository.findByUseId(useId);
+	//Id 중복확인
+	@Transactional
+	public boolean useIdCheck(String useId) {
+		return userRepository.existsByUseId(useId);
+	}
+	
+	//Nick 중복확인
+	@Transactional
+	public boolean useNickCheck(String useNick) {
+		return userRepository.existsByUseNick(useNick);
+	}
+	
+	//Id 찾기
+	@Transactional
+	public String findMyId(String useEmail) {
+		String myId = userRepository.myId(useEmail);
+		if(myId == null) {
+			myId = "해당 Email로 가입된 ID가 존재하지않습니다.";
+		}
+		return myId;
+	}
+	
+	//회원 삭제
+	@Transactional
+	public String deleteUser(String useId) {
+		
+		userRepository.findByUseId(useId).orElseThrow(() -> { 
+			return new IllegalArgumentException("삭제에 실패하였습니다. 해당 id는 DB에 없습니다.");
+		});
+		
+		userRepository.deleteByUseId(useId);
+		return "회원 삭제 완료";
+		
 	}
 	
 	//회원정보수정
@@ -79,5 +111,6 @@ public class UserService {
 		//회원정보 함수 종료시 서비스 종료 트랜잭션 종료 commit이 자동으로 실행
 		//persistance가 변화되면 자동으로 update문 실행
 	}
+	
 	
 }
