@@ -12,11 +12,11 @@ import org.springframework.transaction.annotation.Transactional;
 import com.springboot.lookoutside.domain.User;
 import com.springboot.lookoutside.repository.UserRepository;
 
-//ì„œë¹„ìŠ¤ ì“°ëŠ” ì´ìœ 
-//íŠ¸ëœì­ì…˜ ê´€ë¦¬
+//¼­ºñ½º ¾²´Â ÀÌÀ¯
+//Æ®·£Àè¼Ç °ü¸®
 //
 
-@Service //ìŠ¤í”„ë§ì´ ì»´í¬ë„ŒíŠ¸ ìŠ¤ìº”ì„ í†µí•´ì„œ Beanì— ë“±ë¡ì„ í•´ì¤€ë‹¤. IoC
+@Service //½ºÇÁ¸µÀÌ ÄÄÆ÷³ÍÆ® ½ºÄµÀ» ÅëÇØ¼­ Bean¿¡ µî·ÏÀ» ÇØÁØ´Ù. IoC
 public class UserService {
 
 	@Autowired
@@ -25,18 +25,18 @@ public class UserService {
 	@Autowired
 	private BCryptPasswordEncoder encoder;
 
-	//íšŒì›ê°€ì…
+	//È¸¿ø°¡ÀÔ
 	@Transactional
 	public void signUp(User user) {
-		String originUsePw = user.getUsePw(); // ì›ë³¸ Pw
-		String encUsePw = encoder.encode(originUsePw); // í•´ì‰¬ì‹œí‚¨ Pw
+		String originUsePw = user.getUsePw(); // ¿øº» Pw
+		String encUsePw = encoder.encode(originUsePw); // ÇØ½¬½ÃÅ² Pw
 		user.setUsePw(encUsePw);
-		userRepository.save(user); //í•˜ë‚˜ì˜ íŠ¸ëœì­ì…˜ ì“¸ìˆ˜ë„ ìˆìœ¼ë‚˜ ì—¬ëŸ¬ê°œë„ ê°€ëŠ¥
+		userRepository.save(user); //ÇÏ³ªÀÇ Æ®·£Àè¼Ç ¾µ¼öµµ ÀÖÀ¸³ª ¿©·¯°³µµ °¡´É
 
 	}
 
 	/*
-	@Transactional(readOnly = true) // select ì‹œ íŠ¸ëœì­ì…˜ ì‹œì‘, ì„œë¹„ìŠ¤ ì¢…ë£Œì‹œì— íŠ¸ëœì­ì…˜ ì¢…ë£Œ ( ì •í•©ì„± ìœ ì§€ )
+	@Transactional(readOnly = true) // select ½Ã Æ®·£Àè¼Ç ½ÃÀÛ, ¼­ºñ½º Á¾·á½Ã¿¡ Æ®·£Àè¼Ç Á¾·á ( Á¤ÇÕ¼º À¯Áö )
 	public User signIn(User user) {
 
 		return userRepository.findByUseIdAndUsePw(user.getUseId(), user.getUsePw());
@@ -44,7 +44,7 @@ public class UserService {
 	}
 	 */
 
-	//íšŒì› ëª©ë¡ ì¡°íšŒ
+	//È¸¿ø ¸ñ·Ï Á¶È¸
 	public Page<User> userList(Pageable pageable) {
 
 		Page<User> user = userRepository.findAll(pageable);
@@ -52,68 +52,68 @@ public class UserService {
 		return user;
 	}
 
-	//íšŒì› ì„ íƒ ì‚­ì œ
+	//È¸¿ø ¼±ÅÃ »èÁ¦
 	@Transactional
 	public String deleteCheckUser(int[] useNos) {
 		
 		for(int useNo : useNos) {
 
 			userRepository.findById(useNo).orElseThrow(() -> { 
-				return new IllegalArgumentException("ì‚­ì œì— ì‹¤íŒ¨í•˜ì˜€ìŠµë‹ˆë‹¤. í•´ë‹¹ idëŠ” DBì— ì—†ìŠµë‹ˆë‹¤.");
+				return new IllegalArgumentException("»èÁ¦¿¡ ½ÇÆĞÇÏ¿´½À´Ï´Ù. ÇØ´ç id´Â DB¿¡ ¾ø½À´Ï´Ù.");
 			});
 
 			userRepository.deleteById(useNo);
 		}
-		return "íšŒì› ì‚­ì œ ì™„ë£Œ";
+		return "È¸¿ø »èÁ¦ ¿Ï·á";
 	}
 
-	//Id ì¤‘ë³µí™•ì¸
+	//Id Áßº¹È®ÀÎ
 	@Transactional
 	public boolean useIdCheck(String useId) {
 		return userRepository.existsByUseId(useId);
 	}
 
-	//Nick ì¤‘ë³µí™•ì¸
+	//Nick Áßº¹È®ÀÎ
 	@Transactional
 	public boolean useNickCheck(String useNick) {
 		return userRepository.existsByUseNick(useNick);
 	}
 
-	//Id ì°¾ê¸°
+	//Id Ã£±â
 	@Transactional
 	public String findMyId(String useEmail) {
 		String myId = userRepository.myId(useEmail);
 		if(myId == null) {
-			myId = "í•´ë‹¹ Emailë¡œ ê°€ì…ëœ IDê°€ ì¡´ì¬í•˜ì§€ì•ŠìŠµë‹ˆë‹¤.";
+			myId = "ÇØ´ç Email·Î °¡ÀÔµÈ ID°¡ Á¸ÀçÇÏÁö¾Ê½À´Ï´Ù.";
 		}
 		return myId;
 	}
 
-	//íšŒì› ì‚­ì œ
+	//È¸¿ø »èÁ¦
 	@Transactional
 	public String deleteUser(String useId) {
 
 		userRepository.findByUseId(useId).orElseThrow(() -> { 
-			return new IllegalArgumentException("ì‚­ì œì— ì‹¤íŒ¨í•˜ì˜€ìŠµë‹ˆë‹¤. í•´ë‹¹ idëŠ” DBì— ì—†ìŠµë‹ˆë‹¤.");
+			return new IllegalArgumentException("»èÁ¦¿¡ ½ÇÆĞÇÏ¿´½À´Ï´Ù. ÇØ´ç id´Â DB¿¡ ¾ø½À´Ï´Ù.");
 		});
 
 		userRepository.deleteByUseId(useId);
-		return "íšŒì› ì‚­ì œ ì™„ë£Œ";
+		return "È¸¿ø »èÁ¦ ¿Ï·á";
 
 	}
 
-	//íšŒì›ê¶Œí•œìˆ˜ì •
+	//È¸¿ø±ÇÇÑ¼öÁ¤
 	@Transactional
 	public void changeRole(String useId) {
-		//ìˆ˜ì •ì‹œì—ëŠ” ì˜ì†ì„± ì»¨í…ìŠ¤íŠ¸ User ì˜¤ë¸Œì íŠ¸ë¥¼ ì˜ì†í™”ì‹œí‚¤ê³ , ì˜ì†í™”ëœ User ì˜¤ë¸Œì íŠ¸ë¥¼ ìˆ˜ì •
-		// selectë¥¼ í•´ì„œ Userì˜¤ë¸Œì íŠ¸ë¥¼ DBë¡œ ë¶€í„° ê°€ì ¸ì˜¤ëŠ” ì´ìœ ëŠ” ì˜ì†í™”ë¥¼ í•˜ê¸°ìœ„í•¨
-		// ì˜ì†í™”ëœ ì˜¤ë¸Œì íŠ¸ë¥¼ ë³€ê²½í•˜ë©´ ìë™ìœ¼ë¡œ DBì— updateë¬¸ ì‹¤í–‰
-		//User persistance = userRepository.findByUseId(user.getUseId()).orElseThrow(() -> { //user.getUserId -> ì„¸ì…˜ì— ì˜¬ë¼ì™€ìˆëŠ” Idì´ìš©
-		User persistance = userRepository.findByUseId(useId).orElseThrow(() -> { //í…ŒìŠ¤íŠ¸ìš©
-			return new IllegalArgumentException("íšŒì›ì°¾ê¸° ì‹¤íŒ¨");
+		//¼öÁ¤½Ã¿¡´Â ¿µ¼Ó¼º ÄÁÅØ½ºÆ® User ¿ÀºêÁ§Æ®¸¦ ¿µ¼ÓÈ­½ÃÅ°°í, ¿µ¼ÓÈ­µÈ User ¿ÀºêÁ§Æ®¸¦ ¼öÁ¤
+		// select¸¦ ÇØ¼­ User¿ÀºêÁ§Æ®¸¦ DB·Î ºÎÅÍ °¡Á®¿À´Â ÀÌÀ¯´Â ¿µ¼ÓÈ­¸¦ ÇÏ±âÀ§ÇÔ
+		// ¿µ¼ÓÈ­µÈ ¿ÀºêÁ§Æ®¸¦ º¯°æÇÏ¸é ÀÚµ¿À¸·Î DB¿¡ update¹® ½ÇÇà
+		//User persistance = userRepository.findByUseId(user.getUseId()).orElseThrow(() -> { //user.getUserId -> ¼¼¼Ç¿¡ ¿Ã¶ó¿ÍÀÖ´Â IdÀÌ¿ë
+		User persistance = userRepository.findByUseId(useId).orElseThrow(() -> { //Å×½ºÆ®¿ë
+			return new IllegalArgumentException("È¸¿øÃ£±â ½ÇÆĞ");
 		});
 
-		//ê¶Œí•œ ë³€ê²½
+		//±ÇÇÑ º¯°æ
 		if(persistance.getUseRole().equals("USER")) {
 			persistance.setUseRole("ADMIN");
 		}
@@ -122,53 +122,53 @@ public class UserService {
 			persistance.setUseRole("USER");
 		}
 
-		//íšŒì›ì •ë³´ í•¨ìˆ˜ ì¢…ë£Œì‹œ ì„œë¹„ìŠ¤ ì¢…ë£Œ íŠ¸ëœì­ì…˜ ì¢…ë£Œ commitì´ ìë™ìœ¼ë¡œ ì‹¤í–‰
-		//persistanceê°€ ë³€í™”ë˜ë©´ ìë™ìœ¼ë¡œ updateë¬¸ ì‹¤í–‰
+		//È¸¿øÁ¤º¸ ÇÔ¼ö Á¾·á½Ã ¼­ºñ½º Á¾·á Æ®·£Àè¼Ç Á¾·á commitÀÌ ÀÚµ¿À¸·Î ½ÇÇà
+		//persistance°¡ º¯È­µÇ¸é ÀÚµ¿À¸·Î update¹® ½ÇÇà
 	}
 
-	//íšŒì›ì •ë³´ìˆ˜ì •
+	//È¸¿øÁ¤º¸¼öÁ¤
 	@Transactional
 	public void updateUser(User user) {
-		//ìˆ˜ì •ì‹œì—ëŠ” ì˜ì†ì„± ì»¨í…ìŠ¤íŠ¸ User ì˜¤ë¸Œì íŠ¸ë¥¼ ì˜ì†í™”ì‹œí‚¤ê³ , ì˜ì†í™”ëœ User ì˜¤ë¸Œì íŠ¸ë¥¼ ìˆ˜ì •
-		// selectë¥¼ í•´ì„œ Userì˜¤ë¸Œì íŠ¸ë¥¼ DBë¡œ ë¶€í„° ê°€ì ¸ì˜¤ëŠ” ì´ìœ ëŠ” ì˜ì†í™”ë¥¼ í•˜ê¸°ìœ„í•¨
-		// ì˜ì†í™”ëœ ì˜¤ë¸Œì íŠ¸ë¥¼ ë³€ê²½í•˜ë©´ ìë™ìœ¼ë¡œ DBì— updateë¬¸ ì‹¤í–‰
-		//User persistance = userRepository.findByUseId(user.getUseId()).orElseThrow(() -> { //user.getUserId -> ì„¸ì…˜ì— ì˜¬ë¼ì™€ìˆëŠ” Idì´ìš©
-		User persistance = userRepository.findByUseId("id").orElseThrow(() -> { //í…ŒìŠ¤íŠ¸ìš©
-			return new IllegalArgumentException("íšŒì›ì°¾ê¸° ì‹¤íŒ¨");
+		//¼öÁ¤½Ã¿¡´Â ¿µ¼Ó¼º ÄÁÅØ½ºÆ® User ¿ÀºêÁ§Æ®¸¦ ¿µ¼ÓÈ­½ÃÅ°°í, ¿µ¼ÓÈ­µÈ User ¿ÀºêÁ§Æ®¸¦ ¼öÁ¤
+		// select¸¦ ÇØ¼­ User¿ÀºêÁ§Æ®¸¦ DB·Î ºÎÅÍ °¡Á®¿À´Â ÀÌÀ¯´Â ¿µ¼ÓÈ­¸¦ ÇÏ±âÀ§ÇÔ
+		// ¿µ¼ÓÈ­µÈ ¿ÀºêÁ§Æ®¸¦ º¯°æÇÏ¸é ÀÚµ¿À¸·Î DB¿¡ update¹® ½ÇÇà
+		//User persistance = userRepository.findByUseId(user.getUseId()).orElseThrow(() -> { //user.getUserId -> ¼¼¼Ç¿¡ ¿Ã¶ó¿ÍÀÖ´Â IdÀÌ¿ë
+		User persistance = userRepository.findByUseId("id").orElseThrow(() -> { //Å×½ºÆ®¿ë
+			return new IllegalArgumentException("È¸¿øÃ£±â ½ÇÆĞ");
 		});
-		//ë¹„ë°€ë²ˆí˜¸ ìˆ˜ì •
+		//ºñ¹Ğ¹øÈ£ ¼öÁ¤
 		String rawPassword = user.getUsePw();
 		String encPassword = encoder.encode(rawPassword);
 		persistance.setUsePw(encPassword);
 
-		//ì´ë©”ì¼ ìˆ˜ì •
+		//ÀÌ¸ŞÀÏ ¼öÁ¤
 		persistance.setUseEmail(user.getUseEmail());
 
-		//ë‹‰ë„¤ì„ ìˆ˜ì •
+		//´Ğ³×ÀÓ ¼öÁ¤
 		persistance.setUseNick(user.getUseNick());
 
-		//íšŒì›ì •ë³´ í•¨ìˆ˜ ì¢…ë£Œì‹œ ì„œë¹„ìŠ¤ ì¢…ë£Œ íŠ¸ëœì­ì…˜ ì¢…ë£Œ commitì´ ìë™ìœ¼ë¡œ ì‹¤í–‰
-		//persistanceê°€ ë³€í™”ë˜ë©´ ìë™ìœ¼ë¡œ updateë¬¸ ì‹¤í–‰
+		//È¸¿øÁ¤º¸ ÇÔ¼ö Á¾·á½Ã ¼­ºñ½º Á¾·á Æ®·£Àè¼Ç Á¾·á commitÀÌ ÀÚµ¿À¸·Î ½ÇÇà
+		//persistance°¡ º¯È­µÇ¸é ÀÚµ¿À¸·Î update¹® ½ÇÇà
 	}
 
-	//ë¹„ë°€ë²ˆí˜¸ ì¬ì„¤ì •
+	//ºñ¹Ğ¹øÈ£ Àç¼³Á¤
 	@Transactional
 	public void newPw(User user, String useId) {
-		//ìˆ˜ì •ì‹œì—ëŠ” ì˜ì†ì„± ì»¨í…ìŠ¤íŠ¸ User ì˜¤ë¸Œì íŠ¸ë¥¼ ì˜ì†í™”ì‹œí‚¤ê³ , ì˜ì†í™”ëœ User ì˜¤ë¸Œì íŠ¸ë¥¼ ìˆ˜ì •
-		// selectë¥¼ í•´ì„œ Userì˜¤ë¸Œì íŠ¸ë¥¼ DBë¡œ ë¶€í„° ê°€ì ¸ì˜¤ëŠ” ì´ìœ ëŠ” ì˜ì†í™”ë¥¼ í•˜ê¸°ìœ„í•¨
-		// ì˜ì†í™”ëœ ì˜¤ë¸Œì íŠ¸ë¥¼ ë³€ê²½í•˜ë©´ ìë™ìœ¼ë¡œ DBì— updateë¬¸ ì‹¤í–‰
+		//¼öÁ¤½Ã¿¡´Â ¿µ¼Ó¼º ÄÁÅØ½ºÆ® User ¿ÀºêÁ§Æ®¸¦ ¿µ¼ÓÈ­½ÃÅ°°í, ¿µ¼ÓÈ­µÈ User ¿ÀºêÁ§Æ®¸¦ ¼öÁ¤
+		// select¸¦ ÇØ¼­ User¿ÀºêÁ§Æ®¸¦ DB·Î ºÎÅÍ °¡Á®¿À´Â ÀÌÀ¯´Â ¿µ¼ÓÈ­¸¦ ÇÏ±âÀ§ÇÔ
+		// ¿µ¼ÓÈ­µÈ ¿ÀºêÁ§Æ®¸¦ º¯°æÇÏ¸é ÀÚµ¿À¸·Î DB¿¡ update¹® ½ÇÇà
 
-		User persistance = userRepository.findByUseId(useId).orElseThrow(() -> { //í…ŒìŠ¤íŠ¸ìš©
-			return new IllegalArgumentException("íšŒì›ì°¾ê¸° ì‹¤íŒ¨");
+		User persistance = userRepository.findByUseId(useId).orElseThrow(() -> { //Å×½ºÆ®¿ë
+			return new IllegalArgumentException("È¸¿øÃ£±â ½ÇÆĞ");
 		});
 
-		//ë¹„ë°€ë²ˆí˜¸ ìˆ˜ì •
+		//ºñ¹Ğ¹øÈ£ ¼öÁ¤
 		String rawPassword = user.getUsePw();
 		String encPassword = encoder.encode(rawPassword);
 		persistance.setUsePw(encPassword);
 
-		//íšŒì›ì •ë³´ í•¨ìˆ˜ ì¢…ë£Œì‹œ ì„œë¹„ìŠ¤ ì¢…ë£Œ íŠ¸ëœì­ì…˜ ì¢…ë£Œ commitì´ ìë™ìœ¼ë¡œ ì‹¤í–‰
-		//persistanceê°€ ë³€í™”ë˜ë©´ ìë™ìœ¼ë¡œ updateë¬¸ ì‹¤í–‰
+		//È¸¿øÁ¤º¸ ÇÔ¼ö Á¾·á½Ã ¼­ºñ½º Á¾·á Æ®·£Àè¼Ç Á¾·á commitÀÌ ÀÚµ¿À¸·Î ½ÇÇà
+		//persistance°¡ º¯È­µÇ¸é ÀÚµ¿À¸·Î update¹® ½ÇÇà
 	}
 
 
