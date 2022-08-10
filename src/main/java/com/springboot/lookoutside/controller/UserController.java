@@ -26,91 +26,91 @@ import com.springboot.lookoutside.dto.ResponseDto;
 import com.springboot.lookoutside.repository.UserRepository;
 
 @RestController
-@RequestMapping("/user") // ì¸ì¦ ì—†ëŠ” íšŒì›ë“¤ ë‹¤ ì ‘ì†ê°€ëŠ¥
+@RequestMapping("/user") // ÀÎÁõ ¾ø´Â È¸¿øµé ´Ù Á¢¼Ó°¡´É
 public class UserController {
 
 	@Autowired 
 	private UserService userService;
 
 	
-	//íšŒì›ê°€ì…
+	//È¸¿ø°¡ÀÔ
 	@PostMapping("/sign-up")
-	public ResponseDto<Integer> signUp(@RequestBody User user) { // json íƒ€ì…ì¼ì‹œ RequestBody
-		System.out.println("UserController : signUp í˜¸ì¶œ : íšŒì›ê°€ì…");
+	public ResponseDto<Integer> signUp(@RequestBody User user) { // json Å¸ÀÔÀÏ½Ã RequestBody
+		System.out.println("UserController : signUp È£Ãâ : È¸¿ø°¡ÀÔ");
 		userService.signUp(user);
-		return new ResponseDto<Integer>(HttpStatus.OK.value(),1); // Java ì˜¤ë¸Œì íŠ¸ë¥¼ Jsonìœ¼ë¡œ ë³€ê²½
+		return new ResponseDto<Integer>(HttpStatus.OK.value(),1); // Java ¿ÀºêÁ§Æ®¸¦ JsonÀ¸·Î º¯°æ
 	}
 	
-	/* ì‹œíë¦¬í‹°ë¡œ ì´ê´€í•¨
-	//ë¡œê·¸ì¸
+	/* ½ÃÅ¥¸®Æ¼·Î ÀÌ°üÇÔ
+	//·Î±×ÀÎ
 	@PostMapping("/sign-in")
 	public ResponseDto<Integer> signIn(@RequestBody User user, HttpSession session) { 
-		System.out.println("UserController : signIn í˜¸ì¶œ");
+		System.out.println("UserController : signIn È£Ãâ");
 		User login = userService.signIn(user);
 		
 		if(login != null) {
 			session.setAttribute("pricipal", login);
 		}
-		return new ResponseDto<Integer>(HttpStatus.OK.value(),1); // data : 1 í˜¸ì¶œì‹œ ì„±ê³µ
+		return new ResponseDto<Integer>(HttpStatus.OK.value(),1); // data : 1 È£Ãâ½Ã ¼º°ø
 	}
 	*/
 	
 	//
 	
 	/*
-	//ë‹‰ë„¤ì„ ì¤‘ë³µí™•ì¸
+	//´Ğ³×ÀÓ Áßº¹È®ÀÎ
 	@GetMapping("/Nickname/{useNick}")
 	public ResponseDto<Integer> useNickCheck(@PathVariable String useNick) {
-		System.out.println("UserController : useIdCheck í˜¸ì¶œ " + useNick);
+		System.out.println("UserController : useIdCheck È£Ãâ " + useNick);
 		userService.useNickCheck(useNick);
 		return new ResponseDto<Integer>(HttpStatus.OK.value(),1);
 	}
 	
-	//ID ì¤‘ë³µí™•ì¸
+	//ID Áßº¹È®ÀÎ
 	@GetMapping("/Id/{useId}")
 	public ResponseDto<Integer> useIdCheck(@PathVariable String useId) {
-		System.out.println("UserController : useIdCheck í˜¸ì¶œ " + useId);
+		System.out.println("UserController : useIdCheck È£Ãâ " + useId);
 		userService.useIdCheck(useId);
 		return new ResponseDto<Integer>(HttpStatus.OK.value(),1);
 	}
 	*/
 	
-	//ë‹‰ë„¤ì„ ì¤‘ë³µí™•ì¸
+	//´Ğ³×ÀÓ Áßº¹È®ÀÎ
 	@GetMapping("/Nickname/{useNick}")
 	public ResponseDto<Boolean> useNickCheck(@PathVariable String useNick) {
-		System.out.println("UserController : useIdCheck í˜¸ì¶œ " + useNick);
-		return new ResponseDto<Boolean>(HttpStatus.OK.value(), userService.useNickCheck(useNick)); // false => ë‹‰ë„¤ì„ ê°€ëŠ¥, true => ë‹‰ë„¤ì„ ë¶ˆê°€ëŠ¥
+		System.out.println("UserController : useIdCheck È£Ãâ " + useNick);
+		return new ResponseDto<Boolean>(HttpStatus.OK.value(), userService.useNickCheck(useNick)); // false => ´Ğ³×ÀÓ °¡´É, true => ´Ğ³×ÀÓ ºÒ°¡´É
 	}
   
-	//ID ì¤‘ë³µí™•ì¸
+	//ID Áßº¹È®ÀÎ
 	@GetMapping("/Id/{useId}")
 	public ResponseDto<Boolean> useIdCheck(@PathVariable String useId) {
-		System.out.println("UserController : useIdCheck í˜¸ì¶œ " + useId);
-		return new ResponseDto<Boolean>(HttpStatus.OK.value(), userService.useIdCheck(useId)); // false => ID ê°€ëŠ¥, true => ID ë¶ˆê°€ëŠ¥
+		System.out.println("UserController : useIdCheck È£Ãâ " + useId);
+		return new ResponseDto<Boolean>(HttpStatus.OK.value(), userService.useIdCheck(useId)); // false => ID °¡´É, true => ID ºÒ°¡´É
 	}
 	
-	//íšŒì›ì •ë³´ ìˆ˜ì •
+	//È¸¿øÁ¤º¸ ¼öÁ¤
 	@PutMapping
 	public ResponseDto<Integer> update(@RequestBody User user) {
 		userService.updateUser(user);
 		return new ResponseDto<Integer>(HttpStatus.OK.value(),1);
 	}
 	
-	//ë¹„ë°€ë²ˆí˜¸ë³€ê²½
+	//ºñ¹Ğ¹øÈ£º¯°æ
 	@PutMapping("/NewPw/{useId}")
 	public ResponseDto<Integer> update(@RequestBody User user, @PathVariable String useId) {
 		userService.newPw(user,useId);
 		return new ResponseDto<Integer>(HttpStatus.OK.value(),1);
 	}
 	
-	//ì•„ì´ë”” ì°¾ê¸°
+	//¾ÆÀÌµğ Ã£±â
 	@GetMapping("/Email/{useEmail}")
 	public ResponseDto<String> findMyId(@PathVariable String useEmail) {
 		String myId = userService.findMyId(useEmail);
 		return new ResponseDto<String>(HttpStatus.OK.value(), myId);
 	}
 	
-	//íšŒì› íƒˆí‡´, ì‚­ì œ
+	//È¸¿ø Å»Åğ, »èÁ¦
 	@DeleteMapping("/{useId}")
 	public ResponseDto<String> deleteUser(@PathVariable String useId) {
 		String result = userService.deleteUser(useId);
@@ -118,21 +118,21 @@ public class UserController {
 	}
 	
 	/*
-	@Transactional //í•¨ìˆ˜ ì¢…ë£Œì‹œ ìë™ commit
+	@Transactional //ÇÔ¼ö Á¾·á½Ã ÀÚµ¿ commit
 	@PutMapping("/{use_no}")
-	public User updateUser(@PathVariable int use_no, @RequestBody User requestUser) { //json ë°ì´í„°ë¥¼ ìš”ì²­ => java Objectë¡œ ë³€í™˜ (RequestBody)
-		System.out.println("íšŒì›ë²ˆí˜¸ : " + use_no);
-		System.out.println("ë¹„ë°€ë²ˆí˜¸ : " + requestUser.getUse_pw());
-		System.out.println("ë‹‰ë„¤ì„ : " + requestUser.getUse_nick());
+	public User updateUser(@PathVariable int use_no, @RequestBody User requestUser) { //json µ¥ÀÌÅÍ¸¦ ¿äÃ» => java Object·Î º¯È¯ (RequestBody)
+		System.out.println("È¸¿ø¹øÈ£ : " + use_no);
+		System.out.println("ºñ¹Ğ¹øÈ£ : " + requestUser.getUse_pw());
+		System.out.println("´Ğ³×ÀÓ : " + requestUser.getUse_nick());
 		System.out.println("E-mail : " + requestUser.getUse_email());
 		
 		User user = userReposiory.findById(use_no).orElseThrow(()->{
-			return new IllegalArgumentException("ìˆ˜ì •ì— ì‹¤íŒ¨í•˜ì˜€ìŠµë‹ˆë‹¤");
+			return new IllegalArgumentException("¼öÁ¤¿¡ ½ÇÆĞÇÏ¿´½À´Ï´Ù");
 		});
 		user.setUse_pw(requestUser.getUse_pw());
 		user.setUse_email(requestUser.getUse_email());
 		
-//		userReposiory.save(user); //@Transactional ì“°ë©´ ì•ˆì¨ë„ ëœë‹¤.
+//		userReposiory.save(user); //@Transactional ¾²¸é ¾È½áµµ µÈ´Ù.
 		return user; 
 	}
 	*/
