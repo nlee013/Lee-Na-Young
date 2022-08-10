@@ -15,7 +15,7 @@ public class PrincipalDetailService implements UserDetailsService{
 	@Autowired
 	private UserRepository userRepository;
 	
-	//스프링이 로그인 요청을 가로챌 때, username, password 변수 2개를 가로챔
+	//스프링이 로그인 요청을 가로챌 때, username(useId), password 변수 2개를 가로챔
 	//password 부분처리는 알아서 함.
 	//username이 DB에 있는지만 확인해서 확인
 	@Override

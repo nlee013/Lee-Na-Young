@@ -55,32 +55,6 @@ public class UserController {
 	}
 	*/
 	
-	/*
-	//회원 목록 조회 (전쳬)
-	@GetMapping
-	public ResponseDto<Integer> userList() {
-		System.out.println("UserController : userList 호출");
-		userService.userList();
-		
-		return new ResponseDto<Integer>(HttpStatus.OK.value(),1);
-	}
-	*/
-	//회원 목록 전체 조회
-	@GetMapping
-	public ResponseDto<Page<User>> userList(@PageableDefault(size=3,sort="useNo",direction = Sort.Direction.DESC ) Pageable pageable) { //가입 최근순 조회 3개
-		System.out.println("UserController : userList 호출");
-		Page<User> user = userService.userList(pageable);
-		
-		return new ResponseDto<Page<User>>(HttpStatus.OK.value(),user);
-	}
-	
-	//회원 권한 수정
-	@PutMapping("/{useId}")
-	public ResponseDto<Integer> changeRole(@PathVariable String useId) {
-		userService.changeRole(useId);
-		return new ResponseDto<Integer>(HttpStatus.OK.value(),1);
-	}
-	
 	//
 	
 	/*

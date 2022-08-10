@@ -10,12 +10,15 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.springboot.lookoutside.config.auth.PrincipalDetailService;
 
-@Configuration // ºó µî·Ï (Ioc)
-@EnableWebSecurity // ÇÊÅÍ 
-@EnableGlobalMethodSecurity(prePostEnabled = true) // Æ¯Á¤ ÁÖ¼Ò·Î Á¢±Ù ½Ã ±ÇÇÑ ¹× ÀÎÁõÀ» ¹Ì¸® Ã¼Å©
+@Configuration // ë¹ˆ ë“±ë¡ (Ioc)
+@EnableWebSecurity // í•„í„° 
+@EnableGlobalMethodSecurity(prePostEnabled = true) // íŠ¹ì • ì£¼ì†Œë¡œ ì ‘ê·¼ ì‹œ ê¶Œí•œ ë° ì¸ì¦ì„ ë¯¸ë¦¬ ì²´í¬
 public class SecurityConfig {
 
 	@Autowired
@@ -26,29 +29,47 @@ public class SecurityConfig {
 		return new BCryptPasswordEncoder();
 	}
 	
-	//½ÃÅ¥¸®Æ¼°¡ ´ë½Å ·Î±×ÀÎÇØÁÖ´Âµ¥ pw°¡ ÇØ½¬µÇ¾î ÀÖ´Â »óÅÂ·Î ºñ±³
+	//ì‹œíë¦¬í‹°ê°€ ëŒ€ì‹  ë¡œê·¸ì¸í•´ì£¼ëŠ”ë° pwê°€ í•´ì‰¬ë˜ì–´ ìˆëŠ” ìƒíƒœë¡œ ë¹„êµ
 	
 	AuthenticationManager authenticationManager(AuthenticationManagerBuilder auth) throws Exception {
-		return auth.userDetailsService(principalDetailService).passwordEncoder(endodePw()).and().build(); // ÇØ½¬µÈ ºñ¹Ğ¹øÈ£ ºñ±³
+		return auth.userDetailsService(principalDetailService).passwordEncoder(endodePw()).and().build(); // í•´ì‰¬ëœ ë¹„ë°€ë²ˆí˜¸ ë¹„êµ
 	}
 	
 	@Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-        	.csrf().disable() // csrf ÅäÅ« ºñÈ°¼ºÈ­ (Å×½ºÆ®½Ã ºñÈ°¼ºÈ­)
+	        .httpBasic().disable()
+	        .cors().configurationSource(corsConfigurationSource())
+	        .and()
+        	.csrf().disable() // csrf í† í° ë¹„í™œì„±í™” (í…ŒìŠ¤íŠ¸ì‹œ ë¹„í™œì„±í™”)
 	        .authorizeRequests()
-				.antMatchers("/user/**").permitAll()// user·Î µé¾î¿À´Â °æ·Î ¸ğµÎ Çã¿ë
-				.antMatchers("/manager/**").hasRole("ADMIN") // Admin¸¸ °¡´É
-				.anyRequest().authenticated() // ´Ù¸¥ ¿äÃ»Àº ÀÎÁõÀÌ µÇ¾î¾ßÇÑ´Ù.
+				.antMatchers("/","/user/**","/manager/**").permitAll()// userë¡œ ë“¤ì–´ì˜¤ëŠ” ê²½ë¡œ ëª¨ë‘ í—ˆìš©
+				//.antMatchers("/manager/**").hasRole("ADMIN") // Adminë§Œ ê°€ëŠ¥
+				.anyRequest().authenticated() // ë‹¤ë¥¸ ìš”ì²­ì€ ì¸ì¦ì´ ë˜ì–´ì•¼í•œë‹¤.
         	.and()
         		.formLogin()
-        		 // .loginPage("/login") //·Î±×ÀÎÆäÀÌÁö ÁÖ¼Ò
-        		.loginProcessingUrl("/user/sign-in") // ½ºÇÁ¸µ ½ÃÅ¥¸®Æ¼°¡ ÇØ´ç ÁÖ¼Ò·Î ¿äÃ»¿À´Â ·Î±×ÀÎÀ» °¡·ÎÃ¤¼­ ´ë½Å ·Î±×ÀÎ ÇØÁØ´Ù.
-        		.defaultSuccessUrl("/"); //¼º°ø½Ã µ¥·Á°¥ ÁÖ¼Ò
+        		.successHandler(new CustomAuthenticationSuccessHandler())
+        		 // .loginPage("/login") //ë¡œê·¸ì¸í˜ì´ì§€ ì£¼ì†Œ
+        		.loginProcessingUrl("/user/sign-in"); // ìŠ¤í”„ë§ ì‹œíë¦¬í‹°ê°€ í•´ë‹¹ ì£¼ì†Œë¡œ ìš”ì²­ì˜¤ëŠ” ë¡œê·¸ì¸ì„ ê°€ë¡œì±„ì„œ ëŒ€ì‹  ë¡œê·¸ì¸ í•´ì¤€ë‹¤.
+//        		.defaultSuccessUrl("/"); //ì„±ê³µì‹œ ë°ë ¤ê°ˆ ì£¼ì†Œ
+        		
         
         		
         return http.build();
     }
+	
+	@Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
 
+        configuration.addAllowedOrigin("*");
+        configuration.addAllowedHeader("*");
+        configuration.addAllowedMethod("*");
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
 
 }

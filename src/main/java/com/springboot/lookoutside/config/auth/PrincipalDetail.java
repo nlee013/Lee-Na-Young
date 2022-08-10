@@ -26,7 +26,17 @@ public class PrincipalDetail implements UserDetails{
 	@Override
 	public String getUsername() {
 		
-		return user.getUseName();
+		return user.getUseId();
+	}
+	
+	public int getUseNo() {
+		
+		return user.getUseNo();
+	}
+	
+	public String getUserNick() {
+		
+		return user.getUseNick();
 	}
 
 	//계정이 만료되지 않았는지 리턴. (true : 만료안됨)
@@ -80,5 +90,7 @@ public class PrincipalDetail implements UserDetails{
 		
 		return collectors;
 	}
+
+	
 	
 }
