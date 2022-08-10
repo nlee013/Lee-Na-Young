@@ -14,9 +14,13 @@ import lombok.NoArgsConstructor;
 	public class UserResponseDto {
 	    private String useEmail;
 	    private String useNick;
+	    private String useName;
+	    private int useNo;
 
 	    public static UserResponseDto of(User user) {
 	        return UserResponseDto.builder()
+	        		.useNo(user.getUseNo())
+	        		.useName(user.getUseName())
 	                .useEmail(user.getUseEmail())
 	                .useNick(user.getUseNick())
 	                .build();

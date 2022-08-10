@@ -48,7 +48,7 @@ public class User {
 	
 	@ColumnDefault("'USER'")  //" " 안에 ' ' 넣어줘야한다. 글자시 "'user'"
 	private String useRole; //Enum을 쓰는게 좋다 (domain) //admin,user,manager
-	 
+	
 	@Column(nullable = false)
 	private String useEmail;
 	
