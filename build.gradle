@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'com.spring.boot'
-version = '0.0.1-SNAPSHOT'
+version = '0.0.3-SNAPSHOT'
 sourceCompatibility = '1.8'
 
 configurations {
@@ -32,4 +32,9 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+compileJava.options.encoding = 'UTF-8'
+tasks.withType(JavaCompile){
+options.encoding = 'UTF-8'
 }
