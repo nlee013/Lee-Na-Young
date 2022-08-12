@@ -8,12 +8,15 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.springboot.lookoutside.domain.User;
 
-// ½ºÇÁ¸µ ½ÃÅ¥¸®Æ¼°¡ ·Î±×ÀÎ ¿äÃ»À» °¡·ÎÃ¤¼­ ·Î±×ÀÎÀ» ÁøÇàÇÏ°í ¿Ï·á°¡ µÇ¸é UserDetails Å¸ÀÔÀÇ ¿ÀºêÁ§Æ®¸¦
-// ½ºÇÁ¸µ ½ÃÅ¥¸®Æ¼ÀÇ °íÀ¯ÇÑ ¼¼¼ÇÀúÀå¼Ò¿¡ ÀúÀåÀ» ÇØÁØ´Ù. ±× ¶§ ÀúÀåµÇ´Â°÷ÀÌ PricipalDetail
-public class PrincipalDetail implements UserDetails{
+import lombok.Data;
+
+// ìŠ¤í”„ë§ ì‹œíë¦¬í‹°ê°€ ë¡œê·¸ì¸ ìš”ì²­ì„ ê°€ë¡œì±„ì„œ ë¡œê·¸ì¸ì„ ì§„í–‰í•˜ê³  ì™„ë£Œê°€ ë˜ë©´ UserDetails íƒ€ì…ì˜ ì˜¤ë¸Œì íŠ¸ë¥¼
+// ìŠ¤í”„ë§ ì‹œíë¦¬í‹°ì˜ ê³ ìœ í•œ ì„¸ì…˜ì €ì¥ì†Œì— ì €ì¥ì„ í•´ì¤€ë‹¤. ê·¸ ë•Œ ì €ì¥ë˜ëŠ”ê³³ì´ PricipalDetail
+@Data
+public class PrincipalDetails implements UserDetails{
 	private User user;
 	
-	public PrincipalDetail(User user) {
+	public PrincipalDetails(User user) {
 		this.user = user;
 	}
 
@@ -39,35 +42,35 @@ public class PrincipalDetail implements UserDetails{
 		return user.getUseNick();
 	}
 
-	//°èÁ¤ÀÌ ¸¸·áµÇÁö ¾Ê¾Ò´ÂÁö ¸®ÅÏ. (true : ¸¸·á¾ÈµÊ)
+	//ê³„ì •ì´ ë§Œë£Œë˜ì§€ ì•Šì•˜ëŠ”ì§€ ë¦¬í„´. (true : ë§Œë£Œì•ˆë¨)
 	@Override
 	public boolean isAccountNonExpired() {
 		
 		return true;
 	}
 
-	//°èÁ¤ÀÌ Àá°ÜÀÖ´ÂÁö ¸®ÅÏ ( true : Àá±âÁö ¾ÊÀ½)
+	//ê³„ì •ì´ ì ê²¨ìˆëŠ”ì§€ ë¦¬í„´ ( true : ì ê¸°ì§€ ì•ŠìŒ)
 	@Override
 	public boolean isAccountNonLocked() {
 		
 		return true;
 	}
 
-	// ºñ¹Ğ¹øÈ£°¡ ¸¸·áµÇÁö ¾Ê¾Ò´ÂÁö ¸®ÅÏ (true : ¸¸·á¾ÈµÊ)
+	// ë¹„ë°€ë²ˆí˜¸ê°€ ë§Œë£Œë˜ì§€ ì•Šì•˜ëŠ”ì§€ ë¦¬í„´ (true : ë§Œë£Œì•ˆë¨)
 	@Override
 	public boolean isCredentialsNonExpired() {
 		
 		return true;
 	}
 
-	//°èÁ¤ÀÌ È°¼ºÈ­(»ç¿ë°¡´É) ¸®ÅÏ (true : È°¼ºÈ­)
+	//ê³„ì •ì´ í™œì„±í™”(ì‚¬ìš©ê°€ëŠ¥) ë¦¬í„´ (true : í™œì„±í™”)
 	@Override
 	public boolean isEnabled() {
 		
 		return true;
 	}
 	
-	//°èÁ¤ÀÇ ±ÇÇÑ ¸®ÅÏ
+	//ê³„ì •ì˜ ê¶Œí•œ ë¦¬í„´
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		
@@ -78,11 +81,11 @@ public class PrincipalDetail implements UserDetails{
 			@Override
 			public String getAuthority() {
 				
-				return "ROLE_" + user.getUseRole(); // ROLE_ ²À ºÙ¿©¾ßÇÑ´Ù. //ROLE_USER
+				return "ROLE_" + user.getUseRole(); // ROLE_ ê¼­ ë¶™ì—¬ì•¼í•œë‹¤. //ROLE_USER
 			}
 		});
 		*/
-		//À§ ¾Æ·¡°¡ °°Àº ÇÔ¼ö 
+		//ìœ„ ì•„ë˜ê°€ ê°™ì€ í•¨ìˆ˜ 
 		
 		collectors.add(() -> {
 			return "ROLE_" + user.getUseRole();
