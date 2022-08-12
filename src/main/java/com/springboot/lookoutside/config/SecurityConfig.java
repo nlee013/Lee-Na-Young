@@ -4,60 +4,69 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import com.springboot.lookoutside.config.auth.PrincipalDetailService;
+import com.springboot.lookoutside.config.jwt.JwtAuthenticationFilter;
+import com.springboot.lookoutside.config.jwt.JwtAuthorizationFilter;
+import com.springboot.lookoutside.repository.UserRepository;
 
-@Configuration // ºó µî·Ï (Ioc)
-@EnableWebSecurity // ÇÊÅÍ 
-@EnableGlobalMethodSecurity(prePostEnabled = true) // Æ¯Á¤ ÁÖ¼Ò·Î Á¢±Ù ½Ã ±ÇÇÑ ¹× ÀÎÁõÀ» ¹Ì¸® Ã¼Å©
+@Configuration // ë¹ˆ ë“±ë¡ (Ioc)
+@EnableWebSecurity // í•„í„° 
 public class SecurityConfig {
-
+	
 	@Autowired
-	private PrincipalDetailService principalDetailService;
+	private UserRepository userRepository;
+	
+	@Autowired
+	AuthenticationConfiguration authenticationConfiguration;
 	
 	@Bean // Ioc
 	public BCryptPasswordEncoder endodePw() {
 		return new BCryptPasswordEncoder();
 	}
 	
-	//½ÃÅ¥¸®Æ¼°¡ ´ë½Å ·Î±×ÀÎÇØÁÖ´Âµ¥ pw°¡ ÇØ½¬µÇ¾î ÀÖ´Â »óÅÂ·Î ºñ±³
-	
+	//ì‹œíë¦¬í‹°ê°€ ëŒ€ì‹  ë¡œê·¸ì¸í•´ì£¼ëŠ”ë° pwê°€ í•´ì‰¬ë˜ì–´ ìˆëŠ” ìƒíƒœë¡œ ë¹„êµ
+	/*
 	AuthenticationManager authenticationManager(AuthenticationManagerBuilder auth) throws Exception {
-		return auth.userDetailsService(principalDetailService).passwordEncoder(endodePw()).and().build(); // ÇØ½¬µÈ ºñ¹Ğ¹øÈ£ ºñ±³
+		return auth.userDetailsService(principalDetailService).passwordEncoder(endodePw()).and().build(); // í•´ì‰¬ëœ ë¹„ë°€ë²ˆí˜¸ ë¹„êµ
 	}
+	*/
 	
 	@Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+        	//.addFilterBefore(new MyFilter1(), UsernamePasswordAuthenticationFilter.class) // ì‹œíë¦¬í‹° í•„í„° ì „ì´ë‚˜ í›„ë¡œë§Œ ê±¸ ìˆ˜ ìˆë‹¤.
+        	.cors().configurationSource(corsConfigurationSource()) //cors ì„¤ì •
+        .and()
+	        .csrf().disable() // csrf í† í° ë¹„í™œì„±í™” (í…ŒìŠ¤íŠ¸ì‹œ ë¹„í™œì„±í™”)
+	        .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) //ì„¸ì…˜ì„ ì‚¬ìš©í•˜ì§€ ì•Šê² ë‹¤.
+	    .and()
 	        .httpBasic().disable()
-	        .cors().configurationSource(corsConfigurationSource())
-	        .and()
-        	.csrf().disable() // csrf ÅäÅ« ºñÈ°¼ºÈ­ (Å×½ºÆ®½Ã ºñÈ°¼ºÈ­)
+	        .formLogin().disable()
+	        .addFilter(jwtAuthorizationFilter())
+	        .addFilter(new JwtAuthenticationFilter(authenticationManager()))
+	        .addFilter(new JwtAuthorizationFilter(authenticationManager(), userRepository))
 	        .authorizeRequests()
-				.antMatchers("/","/user/**","/manager/**").permitAll()// user·Î µé¾î¿À´Â °æ·Î ¸ğµÎ Çã¿ë
-				//.antMatchers("/manager/**").hasRole("ADMIN") // Admin¸¸ °¡´É
-				.anyRequest().authenticated() // ´Ù¸¥ ¿äÃ»Àº ÀÎÁõÀÌ µÇ¾î¾ßÇÑ´Ù.
-        	.and()
-        		.formLogin()
-        		.successHandler(new CustomAuthenticationSuccessHandler())
-        		 // .loginPage("/login") //·Î±×ÀÎÆäÀÌÁö ÁÖ¼Ò
-        		.loginProcessingUrl("/user/sign-in"); // ½ºÇÁ¸µ ½ÃÅ¥¸®Æ¼°¡ ÇØ´ç ÁÖ¼Ò·Î ¿äÃ»¿À´Â ·Î±×ÀÎÀ» °¡·ÎÃ¤¼­ ´ë½Å ·Î±×ÀÎ ÇØÁØ´Ù.
-//        		.defaultSuccessUrl("/"); //¼º°ø½Ã µ¥·Á°¥ ÁÖ¼Ò
-        		
-        
-        		
-        return http.build();
+	        .antMatchers("/","/user/**","/manager/**").permitAll()// userë¡œ ë“¤ì–´ì˜¤ëŠ” ê²½ë¡œ ëª¨ë‘ í—ˆìš©
+			.antMatchers("/admin/**").hasRole("ADMIN") // Adminë§Œ ê°€ëŠ¥
+			.anyRequest().authenticated(); // ë‹¤ë¥¸ ìš”ì²­ì€ ì¸ì¦ì´ ë˜ì–´ì•¼í•œë‹¤.
+
+        return http.build(); 
     }
 	
+	@Bean
+    public AuthenticationManager authenticationManager() throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
+
 	@Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
@@ -71,5 +80,11 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
-
+	
+	//login ê²½ë¡œ ë³€ê²½ í•„í„°
+	public JwtAuthenticationFilter jwtAuthorizationFilter() throws Exception {
+	    JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(authenticationManager());
+	    jwtAuthenticationFilter.setFilterProcessesUrl("/user/sign-in");
+	    return jwtAuthenticationFilter;
+	}
 }

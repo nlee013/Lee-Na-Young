@@ -25,17 +25,18 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         /*
-    	// ÄíÆÎ µÑ·¯º¸±â ÇÏ´Ù°¡ ·Î±×ÀÎ ¼º°ø ½Ã ´Ù½Ã °Å±â·Î °¡´Â °æ¿ì
+    	// ì¿ íŒ¡ ë‘˜ëŸ¬ë³´ê¸° í•˜ë‹¤ê°€ ë¡œê·¸ì¸ ì„±ê³µ ì‹œ ë‹¤ì‹œ ê±°ê¸°ë¡œ ê°€ëŠ” ê²½ìš°
         setDefaultTargetUrl("/");
         SavedRequest savedRequest = requestCache.getRequest(request,response);
         if(savedRequest != null){
-            // ÀÎÁõ ¹Ş±â Àü url·Î ÀÌµ¿ÇÏ±â
+            // ì¸ì¦ ë°›ê¸° ì „ urlë¡œ ì´ë™í•˜ê¸°
             String targetUrl = savedRequest.getRedirectUrl();
             redirectStrategy.sendRedirect(request,response,targetUrl);
         }else{
-            // ±âº» url·Î °¡µµ·Ï ÇÔÇÔ
+            // ê¸°ë³¸ urlë¡œ ê°€ë„ë¡ í•¨
            redirectStrategy.sendRedirect(request,response,getDefaultTargetUrl());
         }
         */
+    	System.out.println(request + " " + response + " " + authentication);
     }
 }

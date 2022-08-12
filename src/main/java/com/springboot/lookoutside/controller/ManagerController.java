@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.springboot.lookoutside.Service.UserService;
+import com.springboot.lookoutside.Service.ManagerService;
 import com.springboot.lookoutside.domain.User;
 import com.springboot.lookoutside.dto.ResponseDto;
 
@@ -23,30 +23,30 @@ import com.springboot.lookoutside.dto.ResponseDto;
 public class ManagerController {
 	
 	@Autowired 
-	private UserService userService;
+	private ManagerService managerService;
 	
-	//È¸¿ø ¸ñ·Ï ÀüÃ¼ Á¶È¸
+	//íšŒì› ëª©ë¡ ì „ì²´ ì¡°íšŒ
 	@GetMapping
-	public ResponseDto<Page<User>> userList(@PageableDefault(size=3,sort="useNo",direction = Sort.Direction.DESC ) Pageable pageable) { //°¡ÀÔ ÃÖ±Ù¼ø Á¶È¸ 3°³
-		System.out.println("UserController : userList È£Ãâ");
-		Page<User> user = userService.userList(pageable);
+	public ResponseDto<Page<User>> userList(@PageableDefault(size=3,sort="useCreated",direction = Sort.Direction.DESC ) Pageable pageable) { //ê°€ì… ìµœê·¼ìˆœ ì¡°íšŒ 3ê°œ
+		System.out.println("UserController : userList í˜¸ì¶œ");
+		Page<User> user = managerService.userList(pageable);
+		user.getPageable();
 		
 		return new ResponseDto<Page<User>>(HttpStatus.OK.value(),user);
 	}
 	
-	//È¸¿ø ±ÇÇÑ ¼öÁ¤
+	//íšŒì› ê¶Œí•œ ìˆ˜ì •
 	@PutMapping("/{useId}")
 	public ResponseDto<Integer> changeRole(@PathVariable String useId) {
-		userService.changeRole(useId);
+		managerService.changeRole(useId);
 		return new ResponseDto<Integer>(HttpStatus.OK.value(),1);
 	}
 	
-	//È¸¿ø ¼±ÅÃ »èÁ¦
-	@DeleteMapping("/user")
-	public ResponseDto<String> deleteCheckUser(int[] useNos) {
-		String result = userService.deleteCheckUser(useNos);
+	//íšŒì› ì„ íƒ ì‚­ì œ
+	@DeleteMapping("/user/{useNos}")
+	public ResponseDto<String> deleteCheckUser(@PathVariable int[] useNos) {
+		String result = managerService.deleteCheckUser(useNos);
 		return new ResponseDto<String>(HttpStatus.OK.value(), result);
 	}
-
 	
 }
