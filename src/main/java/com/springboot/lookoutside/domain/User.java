@@ -22,14 +22,14 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder // 빌더 패턴 //ORM -> Java Object -> Table 매핑
-@Entity // User 클래스가 Mysql 테이블 생성
-@DynamicInsert // insert시에 null인 필드를 제외시켜준다.
+@Builder 
+@Entity 
+@DynamicInsert 
 public class User {
 
-	@Id //Primary key
-	@GeneratedValue(strategy = GenerationType.IDENTITY) // 넘버링 auto-increment
-	private int useNo; // 회원번호
+	@Id 
+	@GeneratedValue(strategy = GenerationType.IDENTITY) 
+	private int useNo; 
 	
 	@Column(nullable = false , unique = true)
 	private String useNick;
@@ -46,14 +46,16 @@ public class User {
 	@Column(nullable = false)
 	private Integer useGender;
 	
-	@ColumnDefault("'USER'")  //" " 안에 ' ' 넣어줘야한다. 글자시 "'user'"
-	private String useRole; //Enum을 쓰는게 좋다 (domain) //admin,user,manager
+	@ColumnDefault("'USER'")  
+	private String useRole; 
 	
 	@Column(nullable = false)
 	private String useEmail;
 	
 	@JsonFormat(pattern = "YY.MM.dd HH:mm:ss", timezone = "Asia/Seoul")
-	@CreationTimestamp // 시간 자동 입력, postman에 따로 key,value 안줘도 자동입력
+	@CreationTimestamp 
 	private Timestamp useCreated;
 	
+	private String provider;
+	private String providerId;
 }
