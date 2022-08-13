@@ -31,8 +31,8 @@ public interface UserRepository extends JpaRepository<User, Integer>{ // <테이
 	boolean existsByUseNick(String useNick);
 	Integer deleteByUseId(String useId);
 	
-	@Query(value = "select useId from user where useEmail = ?1" , nativeQuery =true)
-	String myId(String useEmail);
+	@Query(value = "select useId from lo.User where useEmail = ?1" , nativeQuery =true)
+	Optional<String> myId(String useEmail);
 	
 	
 }
