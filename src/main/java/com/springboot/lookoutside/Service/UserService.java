@@ -1,10 +1,8 @@
-package com.springboot.lookoutside.Service;
+package com.springboot.lookoutside.service;
 
-import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,15 +33,24 @@ public class UserService {
 
 	}
 
-	/*
-	@Transactional(readOnly = true) // select 시 트랜잭션 시작, 서비스 종료시에 트랜잭션 종료 ( 정합성 유지 )
-	public User signIn(User user) {
-
-		return userRepository.findByUseIdAndUsePw(user.getUseId(), user.getUsePw());
-
+	//마이페이지
+	@Transactional
+	public Optional<User> myPageId(String useId) {
+		return userRepository.findByUseId(useId);
 	}
-	 */
-
+	
+	
+	//비밀번호 확인
+	@Transactional
+	public boolean checkMyPw(User user) {
+		User persistance = userRepository.findByUseId(user.getUseId()).orElseThrow(() -> { 
+			return new IllegalArgumentException("존재하지 않는 아이디");
+		});
+		
+		return encoder.matches(user.getUsePw(), persistance.getUsePw());
+	}
+	
+	
 	//Id 중복확인
 	@Transactional
 	public boolean useIdCheck(String useId) {
@@ -59,10 +66,10 @@ public class UserService {
 	//Id 찾기
 	@Transactional
 	public String findMyId(String useEmail) {
-		String myId = userRepository.myId(useEmail);
-		if(myId == null) {
-			myId = "해당 Email로 가입된 ID가 존재하지않습니다.";
-		}
+		String myId = userRepository.myId(useEmail).orElseThrow(() -> { 
+			return new IllegalArgumentException("해당 Email로 가입된 ID는 없습니다.");
+		});
+
 		return myId;
 	}
 
@@ -86,19 +93,29 @@ public class UserService {
 		// select를 해서 User오브젝트를 DB로 부터 가져오는 이유는 영속화를 하기위함
 		// 영속화된 오브젝트를 변경하면 자동으로 DB에 update문 실행
 		//User persistance = userRepository.findByUseId(user.getUseId()).orElseThrow(() -> { //user.getUserId -> 세션에 올라와있는 Id이용
-		User persistance = userRepository.findByUseId("id").orElseThrow(() -> { //테스트용
+		User persistance = userRepository.findByUseId(user.getUseId()).orElseThrow(() -> { //테스트용
 			return new IllegalArgumentException("회원찾기 실패");
 		});
+		
 		//비밀번호 수정
-		String rawPassword = user.getUsePw();
-		String encPassword = encoder.encode(rawPassword);
-		persistance.setUsePw(encPassword);
-
+		if(!(user.getUsePw() == null)) {
+			String rawPassword = user.getUsePw();
+			String encPassword = encoder.encode(rawPassword);
+			persistance.setUsePw(encPassword);
+		}
 		//이메일 수정
-		persistance.setUseEmail(user.getUseEmail());
-
+		if(!(user.getUseEmail() == null)) {
+			
+			persistance.setUseEmail(user.getUseEmail());
+			
+		}
+		
 		//닉네임 수정
-		persistance.setUseNick(user.getUseNick());
+		if(!(user.getUseNick() == null)) {
+			
+			persistance.setUseNick(user.getUseNick());
+			
+		}
 
 		//회원정보 함수 종료시 서비스 종료 트랜잭션 종료 commit이 자동으로 실행
 		//persistance가 변화되면 자동으로 update문 실행
