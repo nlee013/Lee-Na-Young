@@ -1,4 +1,4 @@
-package com.springboot.lookoutside.Service;
+package com.springboot.lookoutside.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
