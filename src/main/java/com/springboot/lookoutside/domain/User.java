@@ -49,7 +49,7 @@ public class User {
 	@ColumnDefault("'USER'")  
 	private String useRole; 
 	
-	@Column(nullable = false)
+	@Column(nullable = false,  unique = true)
 	private String useEmail;
 	
 	@JsonFormat(pattern = "YY.MM.dd HH:mm:ss", timezone = "Asia/Seoul")

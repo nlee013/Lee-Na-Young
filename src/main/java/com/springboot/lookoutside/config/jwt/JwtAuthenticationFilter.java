@@ -66,6 +66,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 		String jwtToken = JWT.create()
 				.withSubject(principalDetailis.getUsername())
 				.withExpiresAt(new Date(System.currentTimeMillis()+JwtProperties.EXPIRATION_TIME))
+				.withClaim("useNo", principalDetailis.getUser().getUseNo())
 				.withClaim("useId", principalDetailis.getUser().getUseId())
 				.withClaim("useNick", principalDetailis.getUser().getUseNick())
 				.withClaim("useRole", principalDetailis.getUser().getUseRole())

@@ -35,8 +35,13 @@ public class UserService {
 
 	//마이페이지
 	@Transactional
-	public Optional<User> myPageId(String useId) {
-		return userRepository.findByUseId(useId);
+	public Optional<User> myPageInfo(int useNo) {
+		/*
+		userRepository.findByUseNo(useNo).orElseThrow(() -> { 
+			return new IllegalArgumentException("존재하지 않는 아이디");
+		});
+		*/
+		return userRepository.findByUseNo(useNo);
 	}
 	
 	
@@ -62,10 +67,17 @@ public class UserService {
 	public boolean useNickCheck(String useNick) {
 		return userRepository.existsByUseNick(useNick);
 	}
+	
+	//Nick 중복확인
+	@Transactional
+	public boolean useEmailCheck(String useEmail) {
+		return userRepository.existsByUseEmail(useEmail);
+	}
 
 	//Id 찾기
 	@Transactional
 	public String findMyId(String useEmail) {
+		
 		String myId = userRepository.myId(useEmail).orElseThrow(() -> { 
 			return new IllegalArgumentException("해당 Email로 가입된 ID는 없습니다.");
 		});
@@ -75,13 +87,13 @@ public class UserService {
 
 	//회원 삭제
 	@Transactional
-	public String deleteUser(String useId) {
-
-		userRepository.findByUseId(useId).orElseThrow(() -> { 
-			return new IllegalArgumentException("삭제에 실패하였습니다. 해당 id는 DB에 없습니다.");
+	public String deleteUser(int useNo) {
+/*
+		userRepository.findByUseNo(useNo).orElseThrow(() -> { 
+			return new IllegalArgumentException("삭제에 실패하였습니다. 해당 회원은 존재하지않습니다");
 		});
-
-		userRepository.deleteByUseId(useId);
+*/
+		userRepository.deleteByUseNo(useNo);
 		return "회원 삭제 완료";
 
 	}

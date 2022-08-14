@@ -31,7 +31,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "article")
 @DynamicInsert
 public class Article{
 	
