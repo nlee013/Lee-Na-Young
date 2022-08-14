@@ -40,12 +40,12 @@ public class ManagerService {
 	
 	//회원권한수정
 	@Transactional
-	public void changeRole(String useId) {
+	public void changeRole(int useNo) {
 		//수정시에는 영속성 컨텍스트 User 오브젝트를 영속화시키고, 영속화된 User 오브젝트를 수정
 		// select를 해서 User오브젝트를 DB로 부터 가져오는 이유는 영속화를 하기위함
 		// 영속화된 오브젝트를 변경하면 자동으로 DB에 update문 실행
 		//User persistance = userRepository.findByUseId(user.getUseId()).orElseThrow(() -> { //user.getUserId -> 세션에 올라와있는 Id이용
-		User persistance = userRepository.findByUseId(useId).orElseThrow(() -> { //테스트용
+		User persistance = userRepository.findByUseNo(useNo).orElseThrow(() -> { //테스트용
 			return new IllegalArgumentException("회원찾기 실패");
 		});
 

@@ -46,10 +46,17 @@ public class UserController {
 		return new ResponseDto<Boolean>(HttpStatus.OK.value(), userService.useIdCheck(useId)); // false => ID 가능, true => ID 불가능
 	}
 	
+	//Email 가입이력확인
+	@GetMapping("/Email/{useEmail}")
+	public ResponseDto<Boolean> useEmailCheck(@PathVariable String useEmail) {
+		System.out.println("UserController : useEmailCheck 호출 " + useEmail);
+		return new ResponseDto<Boolean>(HttpStatus.OK.value(), userService.useEmailCheck(useEmail)); // false => 가입이력 없음 , true => 가입이력 있음
+	}
+	
 	//회원 상세정보 보기 (마이페이지 수정할때 뿌려주기위함)
-	@GetMapping("/{useId}")
-	public ResponseDto<Optional<User>> myPageId(@PathVariable String useId) {
-		return new ResponseDto<Optional<User>>(HttpStatus.OK.value(), userService.myPageId(useId));
+	@GetMapping("/{useNo}")
+	public ResponseDto<Optional<User>> myPageInfo(@PathVariable int useNo) {
+		return new ResponseDto<Optional<User>>(HttpStatus.OK.value(), userService.myPageInfo(useNo));
 	}
 	
 	//비밀버호 복호화(확인)
@@ -74,7 +81,7 @@ public class UserController {
 	}
 	
 	//아이디 찾기
-	@GetMapping("/Email/{useEmail}")
+	@GetMapping("/myId/{useEmail}")
 	public ResponseDto<String> findMyId(@PathVariable String useEmail) {
 		System.out.println(useEmail);
 		String myId = userService.findMyId(useEmail);
@@ -82,9 +89,9 @@ public class UserController {
 	}
 	
 	//회원 탈퇴, 삭제
-	@DeleteMapping("/{useId}")
-	public ResponseDto<String> deleteUser(@PathVariable String useId) {
-		String result = userService.deleteUser(useId);
+	@DeleteMapping("/{useNo}")
+	public ResponseDto<String> deleteUser(@PathVariable int useNo) {
+		String result = userService.deleteUser(useNo);
 		return new ResponseDto<String>(HttpStatus.OK.value(), result);
 	}
 	

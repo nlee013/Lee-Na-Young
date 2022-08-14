@@ -26,10 +26,13 @@ public interface UserRepository extends JpaRepository<User, Integer>{ // <테이
 	
 	Optional<User> findByUseId(String useId);
 	Optional<User> findByUseEmail(String useEmail);
+	Optional<User> findByUseNo(int useNo);
 	
 	boolean existsByUseId(String useId);
 	boolean existsByUseNick(String useNick);
+	boolean existsByUseEmail(String useEmail);
 	Integer deleteByUseId(String useId);
+	Integer deleteByUseNo(int useNo);
 	
 	@Query(value = "select useId from lo.User where useEmail = ?1" , nativeQuery =true)
 	Optional<String> myId(String useEmail);
