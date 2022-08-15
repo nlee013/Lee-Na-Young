@@ -33,7 +33,7 @@ public class ArticleImgService {
 		
 		ArticleImg articleImg = new ArticleImg();
 		
-		String uploadPath  = "D:\\images";
+		String uploadPath  = "C:\\sts-bundle\\work\\Back-End_Nayoung\\Look-Outside\\src\\main\\resources\\static\\images";
 		
 		String imgOriName = file.getOriginalFilename(); //filename.jpg	
 		
@@ -83,6 +83,7 @@ public class ArticleImgService {
 		return "게시물 이미지 첨부 완료";
 	}
 
+	//게시물 수정
 	public String updateImg(MultipartFile file) {
 		
 		ArticleImg articleImg = new ArticleImg();
@@ -94,8 +95,9 @@ public class ArticleImgService {
 		String saveImgName = (new Date().getTime()) + "" + (file.getOriginalFilename()); // 현재 날짜와 랜덤 정수값으로 새로운 파일명 만들기
 		
 		String fileExtension = imgOriName.substring(imgOriName.lastIndexOf(".") + 1); // ex) jpg
+		
 		imgOriName = imgOriName.substring(0, imgOriName.lastIndexOf(".")); // ex) 파일
-		//long fileSize = file.getSize(); // 파일 사이즈
+		
 		String filePath = updatePath + "\\" + saveImgName;
 		
 		
@@ -152,11 +154,10 @@ public class ArticleImgService {
 	//이미지 파일 삭제
 	@Transactional
 	public String deleteImgPost(int artNo) {
-
+	
 		articleImgRepository.deleteByArtNo(artNo);
-
+	
 		return "이미피 파일 삭제 완료";
 	}
-	
 	
 }

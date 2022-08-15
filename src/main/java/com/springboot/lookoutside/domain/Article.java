@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 //import java.security.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -41,9 +42,6 @@ public class Article{
 	@JoinColumn(nullable = false)
 	private int useNo;
 	
-	//@Column(nullable = false)
-	//private String artTitle;
-	
 	@Column(nullable = false)
 	private String artSubject;
 	
@@ -61,15 +59,15 @@ public class Article{
 	private int artCategory;
 	
 	@JoinColumn(nullable = false)
-	private int regNo;
+	private String regNo;
 	
 	@Column(nullable = false)
 	private int artWSelect;
 	
-	//댓글 연관관계
+	//��� ��������
 //	@OneToMany(mappedBy = "article", fetch = FetchType.LAZY)
 //	private List<ArticleReply> articleReply;
 	
-	//private String art_heart; //후순위
+	//private String art_heart; //�ļ���
 
 }
