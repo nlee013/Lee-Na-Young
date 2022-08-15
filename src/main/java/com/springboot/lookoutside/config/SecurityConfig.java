@@ -55,7 +55,7 @@ public class SecurityConfig {
 	        .addFilter(new JwtAuthenticationFilter(authenticationManager()))
 	        .addFilter(new JwtAuthorizationFilter(authenticationManager(), userRepository))
 	        .authorizeRequests()
-	        .antMatchers("/","/user/**","/manager/**").permitAll()// user로 들어오는 경로 모두 허용
+	        .antMatchers("/","/user/**","/manager/**","/region/**","/article/**").permitAll()// user로 들어오는 경로 모두 허용
 			.antMatchers("/admin/**").hasRole("ADMIN") // Admin만 가능
 			.anyRequest().authenticated(); // 다른 요청은 인증이 되어야한다.
 
@@ -87,4 +87,5 @@ public class SecurityConfig {
 	    jwtAuthenticationFilter.setFilterProcessesUrl("/user/sign-in");
 	    return jwtAuthenticationFilter;
 	}
+	
 }

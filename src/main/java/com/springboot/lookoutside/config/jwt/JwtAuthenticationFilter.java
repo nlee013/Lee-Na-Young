@@ -63,7 +63,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 		
 		PrincipalDetails principalDetailis = (PrincipalDetails) authResult.getPrincipal();
 		
-		String jwtToken = JWT.create()
+		String accessToken = JWT.create()
 				.withSubject(principalDetailis.getUsername())
 				.withExpiresAt(new Date(System.currentTimeMillis()+JwtProperties.EXPIRATION_TIME))
 				.withClaim("useNo", principalDetailis.getUser().getUseNo())
@@ -72,13 +72,24 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 				.withClaim("useRole", principalDetailis.getUser().getUseRole())
 				.sign(Algorithm.HMAC512(JwtProperties.SECRET));
 		
-		response.addHeader(JwtProperties.HEADER_STRING, JwtProperties.TOKEN_PREFIX+jwtToken);
+		String refreshToken = JWT.create()
+				.withSubject(principalDetailis.getUsername())
+				.withExpiresAt(new Date(System.currentTimeMillis()+JwtProperties.REFRESH_TIME))
+				.withClaim("useNo", principalDetailis.getUser().getUseNo())
+				.withClaim("useId", principalDetailis.getUser().getUseId())
+				.withClaim("useNick", principalDetailis.getUser().getUseNick())
+				.withClaim("useRole", principalDetailis.getUser().getUseRole())
+				.sign(Algorithm.HMAC512(JwtProperties.SECRET));
+		
+		response.addHeader(JwtProperties.HEADER_STRING, JwtProperties.TOKEN_PREFIX+accessToken);
+		response.addHeader(JwtProperties.HEADER_STRING2, JwtProperties.TOKEN_PREFIX+refreshToken);
 		response.setContentType("application/json;charset=UTF-8");
 		response.getWriter().write("{" +
 //					                "\"useId\":" + '"' +principalDetailis.getUser().getUseId() + '"' +
 //					                ",\"useNick\":" + '"' +principalDetailis.getUser().getUseNick() + '"' +
 //					                ",\"jwtToken\":"  + '"' +jwtToken + '"' +
-									"\"jwtToken\":"  + '"' +jwtToken + '"' +
+									"\"accessToken\":"  + '"' +accessToken + '"' +
+									",\"refreshToken\":"  + '"' +refreshToken + '"' +
 					                '}');
 	}
 	

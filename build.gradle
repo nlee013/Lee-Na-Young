@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'com.spring.boot'
-version = '0.1.5-SNAPSHOT'
+version = '0.1.7-SNAPSHOT'
 sourceCompatibility = '1.8'
 
 configurations {
@@ -24,6 +24,8 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 	implementation 'com.auth0:java-jwt:3.10.3'
+	implementation 'commons-io:commons-io:2.8.0'
+    implementation 'commons-fileupload:commons-fileupload:1.4'
 
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'

@@ -34,6 +34,8 @@ public class ArticleImg {
 	private String imgSave;
 	
 	@Column(nullable = false)
-	private String imgNo;
+	private int imgNo;
+	
+	private String imgPath;
 	
 }
