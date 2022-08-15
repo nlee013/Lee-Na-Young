@@ -88,11 +88,11 @@ public class UserService {
 	//회원 삭제
 	@Transactional
 	public String deleteUser(int useNo) {
-/*
+
 		userRepository.findByUseNo(useNo).orElseThrow(() -> { 
 			return new IllegalArgumentException("삭제에 실패하였습니다. 해당 회원은 존재하지않습니다");
 		});
-*/
+
 		userRepository.deleteByUseNo(useNo);
 		return "회원 삭제 완료";
 
