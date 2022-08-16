@@ -30,51 +30,24 @@ import lombok.NoArgsConstructor;
 @Entity
 public class ArticleReply {
 	
-	@JoinColumn(nullable = false)
-	private int artNo; //°Ô½Ã¹° ¹øÈ£
+	@Column(nullable = false)
+	private int artNo; //ï¿½Ô½Ã¹ï¿½ ï¿½ï¿½È£
 	
-	@JoinColumn(nullable = false)
-	private int useNo; //È¸¿ø ¹øÈ£
+	@Column(nullable = false)
+	private int useNo; //È¸ï¿½ï¿½ ï¿½ï¿½È£
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int repNo; //´ñ±Û ¹øÈ£
+	private int repNo; //ï¿½ï¿½ï¿½ ï¿½ï¿½È£
 	
 	@Column(nullable = false)
-	private String repContents; //´ñ±Û ³»¿ë
+	private String repContents; //ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
 	@JsonFormat(pattern = "YY.MM.dd HH:mm:ss", timezone = "Asia/Seoul")
 	@CreationTimestamp
 	@Column(updatable = false)
-	private Timestamp repCreated;//´ñ±Û µî·Ï ³¯Â¥, ½Ã°£
+	private Timestamp repCreated;//ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½Â¥, ï¿½Ã°ï¿½
 	
-	//private int repCnt;//´ñ±Û °¹¼ö
-	//private int repGroup;//´ñ±ÛÀ» ´Ş¾ÒÀ» ¶§(´ë´ñ±Û ÀÌ»óÀÌ ¾Æ´Ñ Ã¹ ´ñ±Û) Áõ°¡ÇÏ´Â °ª
-	//commentGroupÀº ´ë´ñ±Û ÀÌ»ó ´Ş¾ÒÀ» ¶§ Áõ°¡ÇÏÁö ¾ÊÀ¸¸ç,
-	//´ë´ñ±Û È¤Àº ±× ÀÌ»óÀº ÃÖ»óÀ§ ´ñ±ÛÀÇ commentGroup¿Í °°Àº °ªÀ» °¡Áø´Ù. ¶ÇÇÑ ´ñ±ÛÀ» Á¤·ÄÇÑ´Ù. 
-	
-	//@ColumnDefault("0")
-	//private int repSequence;
-	//´ë´ñ±Û ÀÌ»óÀ» ÀÛ¼ºÇßÀ» ¶§ °ªÀÌ Áõ°¡ÇÏ¸ç, ÀÌ°ÍÀ¸·Î °èÃşÇü ´ñ±ÛÀ» Á¤·ÄÇÑ´Ù.
-	
-	//@ColumnDefault("0")
-	//private int repLevel;//°èÃşÇü ´ñ±ÛÀÇ ±íÀÌ
-	
-//	@ManyToOne(fetch = FetchType.LAZY)
-//	@JoinColumn(name = "artNoP")
-//	private Article article;
 
-	
-//	public void changeGroup(int repGroup) {
-//		this.repGroup = repGroup + 1;
-//		
-//	}
-
-//	public ArticleReply(Article article, String repContents) {
-//		
-//		this.article = article;
-//		this.repContents = repContents;
-//		this.setRepCreated(repCreated);
-//	}
 	
 }
