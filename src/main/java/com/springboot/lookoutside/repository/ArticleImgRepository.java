@@ -1,5 +1,7 @@
 package com.springboot.lookoutside.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -14,4 +16,7 @@ public interface ArticleImgRepository extends JpaRepository<ArticleImg, Integer>
 	Integer findImgNo(int artNo);
 	
 	int deleteByArtNo(int artNo);
+	
+	//게시물에 대한 사진 불러오기
+	List<ArticleImg> findAllByArtNo(int artNo);
 }

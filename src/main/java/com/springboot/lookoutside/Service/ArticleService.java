@@ -1,19 +1,31 @@
 package com.springboot.lookoutside.service;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Vector;
+
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springboot.lookoutside.domain.Article;
+import com.springboot.lookoutside.domain.ArticleImg;
+import com.springboot.lookoutside.domain.ArticleReply;
+import com.springboot.lookoutside.domain.Region;
+import com.springboot.lookoutside.repository.ArticleImgRepository;
 import com.springboot.lookoutside.repository.ArticleReplyRepository;
 import com.springboot.lookoutside.repository.ArticleRepository;
+import com.springboot.lookoutside.repository.RegionRepository;
+
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
@@ -22,9 +34,15 @@ public class ArticleService {
 
 	@Autowired
 	private ArticleRepository articleRepository;
+	
+	@Autowired
+	private ArticleImgRepository articleImgRepository;
 
 	@Autowired
 	private ArticleReplyRepository articleReplyRepository;
+	
+	@Autowired
+	private RegionRepository regionRepository;
 
 	//페이징
 	private static final int BlockPageNumCount = 5;
@@ -32,42 +50,11 @@ public class ArticleService {
 
 	//게시물 목록
 	@Transactional
-	public Page<Article> getArticleList(Pageable pageable){
+	public Page<Article> articleList(int useNo, Pageable pageable){
 
-		Page<Article> articlePage = articleRepository.findAll(pageable);
+		Page<Article> articlePage = articleRepository.findAllByUseNo(useNo, pageable);
 
 		return articlePage;
-
-		/*
-	//목록
-	@Transactional
-	public List<ArticleDTO> getArticleList(Integer pageNum){
-
-		Page<Article> page = articleRepository.findAll(PageRequest.of(pageNum - 1, PageCount, Sort.by(Sort.Direction.ASC, "artCreated")));
-
-		List<Article> articleEntities = articleRepository.findAll();
-		List<ArticleDTO> articleDTOList = new ArrayList<>();
-
-		for(Article article : page) {
-			ArticleDTO articleDTO = ArticleDTO.builder()
-					.useNo(article.getUseNo())
-					.artNo(article.getArtNo())
-					.artSubject(article.getArtSubject())
-					.artContents(article.getArtContents())
-					.artCategory(article.getArtCategory())
-					.artWSelect(article.getArtWSelect())
-					.artAddr1(article.getArtAddr1())
-					.artAddr2(article.getArtAddr2())
-					.artCreated(article.getArtCreated())
-					.build();
-
-			articleDTOList.add(articleDTO);
-//			articleDTOList.add(this.convertEntityToDTO(article));
-
-		}
-		System.out.println(articleDTOList);
-		return articleDTOList;
-		 */
 
 	}
 
@@ -120,7 +107,7 @@ public class ArticleService {
 
 		articleRepository.save(article);
 
-		return "게시물 등록 완료";
+		return "1";
 
 	}
 
@@ -132,7 +119,7 @@ public class ArticleService {
 
 		Article update = articleRepository.findByArtNo(artNo).orElseThrow(() -> {
 
-			return new IllegalArgumentException("게시물이 존재하지 않습니다.");
+			return new IllegalArgumentException("0");
 		});
 
 		update.setArtSubject(article.getArtSubject());
@@ -141,7 +128,7 @@ public class ArticleService {
 		update.setArtWSelect(article.getArtWSelect());
 		update.setRegNo(article.getRegNo());
 
-		return "게시물 수정 완료";
+		return "1";
 
 	}
 
@@ -151,11 +138,11 @@ public class ArticleService {
 
 		articleRepository.findByArtNo(artNo).orElseThrow(() -> {
 
-			return new IllegalArgumentException("게시물이 존재하지 않습니다.");
+			return new IllegalArgumentException("0");
 		});
 
 		articleRepository.deleteById(artNo);
-		return "게시물 삭제 완료";
+		return "1";
 	}
 
 	//검색 기능
@@ -169,18 +156,42 @@ public class ArticleService {
 
 
 	//게시물 상세 페이지
-	public String detailPost(Article article, int artNo) {
+	public Map<String, Object> detailPost(int artNo) {
 
-		articleRepository.findByArtNo(artNo).orElseThrow(() -> {
+		Article article = articleRepository.findByArtNo(artNo).orElseThrow(() -> {
 
-			return new IllegalArgumentException("해당 게시물의 상세 페이지를 찾을 수 없습니다.");
+			return new IllegalArgumentException("0");
+			
 		});
+		
+		String regNo = article.getRegNo();
+		
+		List<ArticleImg> articleImg = articleImgRepository.findAllByArtNo(artNo);
+		
+		List<ArticleReply> articleReply = articleReplyRepository.findAllByArtNo(artNo);
+		
+		List<Region> region = regionRepository.findByRegNoStartingWith(regNo);
+		
+		Map<String, Object> detail = new HashMap<String, Object>();
+		
+		detail.put("article", article);
+		detail.put("articleImg", articleImg);
+		detail.put("articleReply", articleReply);
+		detail.put("region", region);
 
-		articleRepository.findByArtNo(artNo);
-
-		return "게시물 상세페이지";
+		return detail;
 
 	}
+	
+	//카테고리,지역별 게시물 목록 조회
+	@Transactional
+	public Page<Article> articleListCateRegNo(int artCategory, String regNo, Pageable pageable){
+
+		Page<Article> articlePage = articleRepository.findAllByArtCategoryAndRegNoStartingWith(artCategory, regNo, pageable);
+
+		return articlePage;
+	}
+	
 	//	
 	//	@Transactional
 	//	public int saveReply(ArticleReplyDTO articleReplyDTO) {

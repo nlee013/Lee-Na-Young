@@ -1,6 +1,7 @@
 package com.springboot.lookoutside.controller;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import javax.annotation.Resource;
 
@@ -49,41 +50,40 @@ public class ArticleController {
 	@Resource
 	private ArticleImgService articleImgService;
 
-	//페이징
-	//올린 게시물 목록 페이지
-	@GetMapping("/list/{useNo}")
-	public ResponseDto<Page<Article>> list(@PageableDefault(size=3, sort="artNo", direction = Sort.Direction.DESC) Pageable pageable){
-		Page<Article> articleList = articleService.getArticleList(pageable);
-		return new ResponseDto<Page<Article>>(HttpStatus.OK.value(), articleList);
-	}
-
 	//게시물 작성 페이지
 	@GetMapping("/post")
 	public String upload() {
 		System.out.println("글 작성 페이지");
 		return "article/upload.html";
 	}
+	
+	//내가 쓴 게시물 목록
+	@GetMapping("/list/{useNo}")
+	public ResponseDto<Page<Article>> articlelist(@PathVariable int useNo, @PageableDefault(size=5, sort="artNo", direction = Sort.Direction.DESC) Pageable pageable){
+		Page<Article> articleList = articleService.articleList(useNo, pageable);
+		return new ResponseDto<Page<Article>>(HttpStatus.OK.value(), articleList);
+	}
 
 	//게시물 작성 + 이미지 파일 첨부
 	@PostMapping("/post")
 	public ResponseDto<String> upload(MultipartFile[] multipartFiles, String articles) throws Exception{
 
-		System.out.println(articles);
-
 		String save = articleService.savePost(articles);//이미지 파일 제외 데이터 저장
 
-		System.out.println(multipartFiles);
+		if(multipartFiles != null) {
+			
+			for(int i = 0; i < multipartFiles.length; i++) {
 
-		for(int i = 0; i < multipartFiles.length; i++) {
+				MultipartFile file = multipartFiles[i];
 
-			MultipartFile file = multipartFiles[i];
+				articleImgService.saveImg(file);//이미지 파일 저장
 
-			articleImgService.saveImg(file);//이미지 파일 저장
+				System.out.println("게시물 올리기");
+				
+			}	
+			
+		}
 
-			System.out.println("게시물 올리기");
-		}	
-
-		System.out.println(multipartFiles);		
 		return new ResponseDto<String>(HttpStatus.OK.value(), save);
 
 	}
@@ -96,29 +96,30 @@ public class ArticleController {
 
 		articleImgService.deleteImgPost(artNo);//이미지 파일 삭제
 
-		System.out.println(multipartFiles);
-		System.out.println(artNo);
+		if(multipartFiles != null) {
+			
+			for(int i = 0; i < multipartFiles.length; i++) {
+				
+				MultipartFile file = multipartFiles[i];
+				
+				articleImgService.saveImg(file);//이미지 파일 저장\
+				
+				System.out.println("게시물 수정하기");
+			}	
+			
+		}
 
-		for(int i = 0; i < multipartFiles.length; i++) {
-
-			MultipartFile file = multipartFiles[i];
-
-			articleImgService.saveImg(file);//이미지 파일 저장\
-			System.out.println("게시물 수정하기");
-		}	
-
-		System.out.println(multipartFiles);
 		return new ResponseDto<String>(HttpStatus.OK.value(), update);
 	}
 
 	//게시물 상세 조회 페이지
 	@GetMapping("/{artNo}")
-	public ResponseDto<String> detail(@PathVariable int artNo, Article article) {
+	public ResponseDto<Map<String, Object>> detail(@PathVariable int artNo) {
 
-		String detail = articleService.detailPost(article, artNo);
+		Map<String, Object> detail = articleService.detailPost(artNo);
 		System.out.println("게시물 상세 페이지입니다.");
 
-		return new ResponseDto<String>(HttpStatus.OK.value(), detail);
+		return new ResponseDto<Map<String, Object>>(HttpStatus.OK.value(), detail);
 	}
 
 	//삭제
@@ -172,6 +173,13 @@ public class ArticleController {
 
 		return new ResponseDto<ArticleReply>(HttpStatus.OK.value(), replyDelete);
 
+	}
+	
+	//게시물 카테고리,지역별 조회
+	@GetMapping("/list/{artCategory}/{regNo}")
+	public ResponseDto<Page<Article>> articleListCate(@PathVariable int artCategory, @PathVariable String regNo, @PageableDefault(size=5, sort="artNo", direction = Sort.Direction.DESC) Pageable pageable){
+		Page<Article> articleList = articleService.articleListCateRegNo(artCategory, regNo, pageable);
+		return new ResponseDto<Page<Article>>(HttpStatus.OK.value(), articleList);
 	}
 
 	//	//댓글 목록
