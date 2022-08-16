@@ -16,7 +16,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.springboot.lookoutside.config.jwt.JwtAuthenticationFilter;
 import com.springboot.lookoutside.config.jwt.JwtAuthorizationFilter;
-import com.springboot.lookoutside.config.oauth.PrincipalOauth2UserService;
 import com.springboot.lookoutside.repository.UserRepository;
 
 @Configuration // 빈 등록 (Ioc)
@@ -28,9 +27,6 @@ public class SecurityConfig {
 	
 	@Autowired
 	AuthenticationConfiguration authenticationConfiguration;
-	
-	@Autowired
-	private PrincipalOauth2UserService principalOauth2UserService;
 	
 	@Bean // Ioc
 	public BCryptPasswordEncoder endodePw() {
@@ -61,11 +57,7 @@ public class SecurityConfig {
 	        .authorizeRequests()
 	        .antMatchers("/","/user/**","/manager/**","/region/**","/article/**").permitAll()// user로 들어오는 경로 모두 허용
 			.antMatchers("/admin/**").hasRole("ADMIN") // Admin만 가능
-			.anyRequest().authenticated()
-		.and()
-    		.oauth2Login().loginPage("/")
-    		.userInfoEndpoint()
-    		.userService(principalOauth2UserService);// 구글 로그인이 완료된 뒤 후처리; // 다른 요청은 인증이 되어야한다.
+			.anyRequest().authenticated(); // 다른 요청은 인증이 되어야한다.
 
         return http.build(); 
     }

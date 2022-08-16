@@ -49,7 +49,7 @@ public class UserService {
 	@Transactional
 	public boolean checkMyPw(User user) {
 		User persistance = userRepository.findByUseId(user.getUseId()).orElseThrow(() -> { 
-			return new IllegalArgumentException("0");
+			return new IllegalArgumentException("존재하지 않는 아이디");
 		});
 		
 		return encoder.matches(user.getUsePw(), persistance.getUsePw());
@@ -79,7 +79,7 @@ public class UserService {
 	public String findMyId(String useEmail) {
 		
 		String myId = userRepository.myId(useEmail).orElseThrow(() -> { 
-			return new IllegalArgumentException("0");
+			return new IllegalArgumentException("해당 Email로 가입된 ID는 없습니다.");
 		});
 
 		return myId;
@@ -90,11 +90,11 @@ public class UserService {
 	public String deleteUser(int useNo) {
 
 		userRepository.findByUseNo(useNo).orElseThrow(() -> { 
-			return new IllegalArgumentException("0");
+			return new IllegalArgumentException("삭제에 실패하였습니다. 해당 회원은 존재하지않습니다");
 		});
 
 		userRepository.deleteByUseNo(useNo);
-		return "1";
+		return "회원 삭제 완료";
 
 	}
 
@@ -104,25 +104,26 @@ public class UserService {
 		//수정시에는 영속성 컨텍스트 User 오브젝트를 영속화시키고, 영속화된 User 오브젝트를 수정
 		// select를 해서 User오브젝트를 DB로 부터 가져오는 이유는 영속화를 하기위함
 		// 영속화된 오브젝트를 변경하면 자동으로 DB에 update문 실행
-		User persistance = userRepository.findByUseNo(user.getUseNo()).orElseThrow(() -> { //테스트용
-			return new IllegalArgumentException("0");
+		//User persistance = userRepository.findByUseId(user.getUseId()).orElseThrow(() -> { //user.getUserId -> 세션에 올라와있는 Id이용
+		User persistance = userRepository.findByUseId(user.getUseId()).orElseThrow(() -> { //테스트용
+			return new IllegalArgumentException("회원찾기 실패");
 		});
 		
 		//비밀번호 수정
-		if(!(user.getUsePw() == null) && !(user.getUsePw().equals(""))) {
+		if(!(user.getUsePw() == null)) {
 			String rawPassword = user.getUsePw();
 			String encPassword = encoder.encode(rawPassword);
 			persistance.setUsePw(encPassword);
 		}
 		//이메일 수정
-		if(!(user.getUseEmail() == null) && !(user.getUseEmail().equals(""))) {
+		if(!(user.getUseEmail() == null)) {
 			
 			persistance.setUseEmail(user.getUseEmail());
 			
 		}
 		
 		//닉네임 수정
-		if(!(user.getUseNick() == null) && !(user.getUseNick().equals(""))) {
+		if(!(user.getUseNick() == null)) {
 			
 			persistance.setUseNick(user.getUseNick());
 			
@@ -140,7 +141,7 @@ public class UserService {
 		// 영속화된 오브젝트를 변경하면 자동으로 DB에 update문 실행
 
 		User persistance = userRepository.findByUseId(useId).orElseThrow(() -> { //테스트용
-			return new IllegalArgumentException("0");
+			return new IllegalArgumentException("회원찾기 실패");
 		});
 
 		//비밀번호 수정
