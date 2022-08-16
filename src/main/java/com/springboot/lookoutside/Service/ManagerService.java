@@ -6,7 +6,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.springboot.lookoutside.domain.Article;
 import com.springboot.lookoutside.domain.User;
+import com.springboot.lookoutside.repository.ArticleRepository;
 import com.springboot.lookoutside.repository.UserRepository;
 
 @Service
@@ -14,7 +16,10 @@ public class ManagerService {
 
 	@Autowired
 	private UserRepository userRepository;
-	
+
+	@Autowired
+	private ArticleRepository articleRepository;
+
 	//회원 목록 조회
 	public Page<User> userList(Pageable pageable) {
 
@@ -22,22 +27,22 @@ public class ManagerService {
 
 		return user;
 	}
-	
+
 	//회원 선택 삭제
 	@Transactional
 	public String deleteCheckUser(int[] useNos) {
-		
+
 		for(int useNo : useNos) {
 
 			userRepository.findById(useNo).orElseThrow(() -> { 
-				return new IllegalArgumentException("삭제에 실패하였습니다. 해당 id는 DB에 없습니다.");
+				return new IllegalArgumentException("0");
 			});
 
 			userRepository.deleteById(useNo);
 		}
-		return "회원 삭제 완료";
+		return "1";
 	}
-	
+
 	//회원권한수정
 	@Transactional
 	public void changeRole(int useNo) {
@@ -46,7 +51,7 @@ public class ManagerService {
 		// 영속화된 오브젝트를 변경하면 자동으로 DB에 update문 실행
 		//User persistance = userRepository.findByUseId(user.getUseId()).orElseThrow(() -> { //user.getUserId -> 세션에 올라와있는 Id이용
 		User persistance = userRepository.findByUseNo(useNo).orElseThrow(() -> { //테스트용
-			return new IllegalArgumentException("회원찾기 실패");
+			return new IllegalArgumentException("0");
 		});
 
 		//권한 변경
@@ -61,4 +66,23 @@ public class ManagerService {
 		//회원정보 함수 종료시 서비스 종료 트랜잭션 종료 commit이 자동으로 실행
 		//persistance가 변화되면 자동으로 update문 실행
 	}
+
+	//게시물 목록 조회
+	@Transactional
+	public Page<Article> articleList(Pageable pageable){
+
+		Page<Article> articlePage = articleRepository.findAll(pageable);
+
+		return articlePage;
+	}
+
+	//카테고리별 게시물 목록 조회
+	@Transactional
+	public Page<Article> articleListCate(int artCategory, Pageable pageable){
+
+		Page<Article> articlePage = articleRepository.findAllByArtCategory(artCategory, pageable);
+
+		return articlePage;
+	}
+
 }
