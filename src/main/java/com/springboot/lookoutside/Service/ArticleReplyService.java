@@ -1,12 +1,14 @@
 package com.springboot.lookoutside.service;
 
-import java.util.List;
+import java.util.Optional;
 
-import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.springboot.lookoutside.domain.Article;
 import com.springboot.lookoutside.domain.ArticleReply;
 import com.springboot.lookoutside.repository.ArticleReplyRepository;
+
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
@@ -16,46 +18,24 @@ public class ArticleReplyService {
 	@Autowired
 	private ArticleReplyRepository articleReplyRepository;
 
-	//댓긇 등록
-	@Transactional
-	public String saveReply(ArticleReply articleReply) {
+	public ArticleReply replyUpdate(int replyNo) {
 		
-		articleReplyRepository.save(articleReply);
-		
-		return "1";
+		return null;
 	}
 
-	//댓글 수정
-	public String updateReply(int repNo, ArticleReply articleReply) {
+	public ArticleReply replyDelete(int replyNo) {
 		
-		articleReply =  articleReplyRepository.findByRepNo(repNo).orElseThrow(() -> { 
-			
-			return new IllegalArgumentException("0");
-		});
-		
-		articleReply.setRepContents(articleReply.getRepContents());
-		
-		return "1";
+		return null;
 	}
 
-	//댓글 삭제
-	public String deleteReply(int repNo) {
+	public void replySave(Article findArticle, String repContents) {
+		// TODO Auto-generated method stub
 		
-		articleReplyRepository.findByRepNo(repNo).orElseThrow(() -> { 
-			return new IllegalArgumentException("0");
-		});
-
-		articleReplyRepository.deleteById(repNo);
-		
-		return "1";
 	}
 
-	//댓글 목록
-	public List<ArticleReply> replyList(int repNo, int artNo, ArticleReply articleReply) {
-		
-		List<ArticleReply> replyList = articleReplyRepository.findAllByArtNo(artNo);
-		
-		return replyList;
+	public ArticleReply replyList(int replyNo) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 	
