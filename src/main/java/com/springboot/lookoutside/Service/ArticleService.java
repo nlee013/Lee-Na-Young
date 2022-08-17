@@ -1,22 +1,33 @@
 package com.springboot.lookoutside.service;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springboot.lookoutside.domain.Article;
 import com.springboot.lookoutside.domain.ArticleImg;
+import com.springboot.lookoutside.domain.ArticleReply;
+import com.springboot.lookoutside.domain.Region;
+import com.springboot.lookoutside.domain.User;
+import com.springboot.lookoutside.dto.ArticleDto;
+import com.springboot.lookoutside.dto.ArticleMapping;
 import com.springboot.lookoutside.repository.ArticleImgRepository;
 import com.springboot.lookoutside.repository.ArticleReplyRepository;
 import com.springboot.lookoutside.repository.ArticleRepository;
+import com.springboot.lookoutside.repository.RegionRepository;
+import com.springboot.lookoutside.repository.UserRepository;
+
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
@@ -27,87 +38,69 @@ public class ArticleService {
 	private ArticleRepository articleRepository;
 	
 	@Autowired
+	private ArticleImgRepository articleImgRepository;
+
+	@Autowired
 	private ArticleReplyRepository articleReplyRepository;
 	
 	@Autowired
-	private ArticleImgRepository articleImgRepository;
+	private UserRepository userRepository;
 	
-	//����¡
-	private static final int BlockPageNumCount = 5;
-	private static final int PageCount = 12;
-	
-	//�Խù� ���
+	@Autowired
+	private RegionRepository regionRepository;
+
+	//게시물 목록
 	@Transactional
-	public Page<Article> getArticleList(Pageable pageable){
-		
-		Page<Article> articlePage = articleRepository.findAll(pageable);
+	public Page<Article> articleTest(int useNo, Pageable pageable){
+
+		Page<Article> articlePage = articleRepository.findAllByUseNo(useNo, pageable);
 
 		return articlePage;
-		
+
 	}
 	
-	//�Խù� ����
+	//게시물 목록
 	@Transactional
-	public long getArticleCount() {
-		return articleRepository.count();
-	}
-	
-	//�Խù� ����¡
-	public Integer[] getPageList(Integer currentPageNum) {
-		Integer[] pageList = new Integer[BlockPageNumCount];
-		
-		//�� �Խù� ����
-		Double totalCount = Double.valueOf(this.getArticleCount());
-		
-		//�� �Խù� �������� ����� ������ ������ ��ȣ ���(�ø� ���)
-		Integer totalLastPageNum = (int)(Math.ceil(totalCount/PageCount));
-		
-		//���� �������� �������� ���� ������ ������ ��ȣ ���
-		Integer blockLastPageNum = (totalLastPageNum > currentPageNum + BlockPageNumCount) ? currentPageNum + BlockPageNumCount : totalLastPageNum;
-		
-		//������ ���� ��ȣ ����
-		currentPageNum = (currentPageNum <= 3)? 1: currentPageNum - 2;
-		
-		//������ ��ȣ �Ҵ�
-		for(int val = currentPageNum, idx = 0; val <= blockLastPageNum; val++, idx++) {
-			pageList[idx] = val;
-		}
-		
-		return pageList;
+	public Page<ArticleMapping> articleList(int useNo, Pageable pageable){
+
+		Page<ArticleMapping> articlePage = articleRepository.findAllBy(useNo, pageable);
+
+		return articlePage;
+
 	}
 
 	//게시물 등록
 	@Transactional
 	public String savePost(String articles) {
-		
-		
+
+
 		Article article = new Article() ;
 		try {
 			article = new ObjectMapper().readValue(articles, Article.class);
 		} catch (JsonMappingException e) {
-			
+
 			e.printStackTrace();
 		} catch (JsonProcessingException e) {
-			
+
 			e.printStackTrace();
 		}
 		System.out.println(article.getArtContents());
-		
+
 		articleRepository.save(article);
-		
-		return "게시물 등록 완료";
-		
+
+		return "1";
+
 	}
-	
+
 	//게시물 수정
 	@Transactional
 	public String updatePost(int artNo, String articles) throws JsonMappingException, JsonProcessingException {
-		
+
 		Article article = new ObjectMapper().readValue(articles, Article.class);
 
 		Article update = articleRepository.findByArtNo(artNo).orElseThrow(() -> {
 
-			return new IllegalArgumentException("게시물이 존재하지 않습니다.");
+			return new IllegalArgumentException("0");
 		});
 
 		update.setArtSubject(article.getArtSubject());
@@ -116,23 +109,22 @@ public class ArticleService {
 		update.setArtWSelect(article.getArtWSelect());
 		update.setRegNo(article.getRegNo());
 
-		return "게시물 수정 완료";
-		
+		return "1";
+
 	}
-	
+
 	//게시물 삭제
 	@Transactional
 	public String deletePost(int artNo) {
-		
+
 		articleRepository.findByArtNo(artNo).orElseThrow(() -> {
-		
-			return new IllegalArgumentException("게시물 삭제를 실패하였습니다.");
+
+			return new IllegalArgumentException("0");
 		});
-		
+
 		articleRepository.deleteById(artNo);
-		return "게시물 삭제 완료";
+		return "1";
 	}
-	
 
 	//검색 기능
 	@Transactional
@@ -142,19 +134,72 @@ public class ArticleService {
 
 		return articleEntities;
 	}
-	
+
 
 	//게시물 상세 페이지
-	public Optional<Article> detailPost(int artNo) {
-		
-		return articleRepository.findByArtNo(artNo);
-		
-	}
+	public Map<String, Object> detailPost(int artNo) {
 
-	@Transactional
-	public Article findOne(int artNo) {
+		Article article = articleRepository.findByArtNo(artNo).orElseThrow(() -> {
+
+			return new IllegalArgumentException("0");
+			
+		});
 		
-		return null;
+		String regNo = article.getRegNo();
+		
+		User user = userRepository.findByUseNo2(article.getUseNo());
+		
+		List<ArticleImg> articleImg = articleImgRepository.findAllByArtNo(artNo);
+		
+		List<ArticleReply> articleReply = articleReplyRepository.findAllByArtNo(artNo);
+		
+		Region region = regionRepository.findByRegNo(regNo);
+		
+		Map<String, Object> detail = new HashMap<String, Object>();
+		
+		/*
+		ArticleDto articleDto = new ArticleDto();
+		
+		articleDto.setArtNo(artNo);
+		articleDto.setUseNo(article.getUseNo());
+		articleDto.setUseNick(user.getUseNick());
+		articleDto.setArtWSelect(article.getArtWSelect());
+		articleDto.setArtCategory(article.getArtCategory());
+		articleDto.setArtSubject(article.getArtSubject());
+		articleDto.setArtContents(article.getArtSubject());
+		articleDto.setArtCreated(article.getArtCreated());
+		articleDto.setRegNo(regNo);
+		articleDto.setRegAddr1(region.getRegAddr1());
+		articleDto.setRegAddr2(region.getRegAddr2());
+		
+		detail.put("articleDto", articleDto);
+		*/
+		detail.put("article", article);
+		detail.put("region", region);
+		detail.put("articleImg", articleImg);
+		detail.put("articleReply", articleReply);
+		
+		//System.out.println(articleRepository.findAllByRegNoQuery(regNo));
+
+		return detail;
+
 	}
+	
+	//카테고리, 지역별 게시물 목록 조회
+	@Transactional
+	public Page<Article> articleListCateRegNo(int artCategory, String regNo, Pageable pageable){
+
+		Page<Article> articlePage = articleRepository.findAllByArtCategoryAndRegNoStartingWith(artCategory, regNo, pageable);
+
+		return articlePage;
+	}
+	
+	//	
+	//	@Transactional
+	//	public int saveReply(ArticleReplyDTO articleReplyDTO) {
+	//		
+	//		return articleReplyRepository.save(articleReplyDTO);
+	//	}
+
 
 }

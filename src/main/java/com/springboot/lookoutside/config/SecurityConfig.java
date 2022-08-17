@@ -4,41 +4,64 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import com.springboot.lookoutside.config.jwt.JwtAuthenticationEntryPoint;
 import com.springboot.lookoutside.config.jwt.JwtAuthenticationFilter;
-import com.springboot.lookoutside.config.jwt.JwtAuthorizationFilter;
-import com.springboot.lookoutside.repository.UserRepository;
+import com.springboot.lookoutside.config.jwt.JwtRequestFilter;
+//import com.springboot.lookoutside.config.jwt.JwtRequestFilter;
+import com.springboot.lookoutside.config.jwt.JwtUserDetailsService;
+import com.springboot.lookoutside.handler.OAuth2AuthenticationFailureHandler;
+import com.springboot.lookoutside.handler.OAuth2SuccessHandler;
+import com.springboot.lookoutside.repository.HttpCookieOAuth2AuthorizationRequestRepository;
+import com.springboot.lookoutside.service.CustomOauth2UserService;
+
+import lombok.AllArgsConstructor;
 
 @Configuration // 빈 등록 (Ioc)
+@AllArgsConstructor //없어서 오류났었음 휴;;
 @EnableWebSecurity // 필터 
 public class SecurityConfig {
 	
 	@Autowired
-	private UserRepository userRepository;
-	
-	@Autowired
 	AuthenticationConfiguration authenticationConfiguration;
 	
-	@Bean // Ioc
-	public BCryptPasswordEncoder endodePw() {
-		return new BCryptPasswordEncoder();
-	}
-	
-	//시큐리티가 대신 로그인해주는데 pw가 해쉬되어 있는 상태로 비교
-	/*
-	AuthenticationManager authenticationManager(AuthenticationManagerBuilder auth) throws Exception {
-		return auth.userDetailsService(principalDetailService).passwordEncoder(endodePw()).and().build(); // 해쉬된 비밀번호 비교
-	}
-	*/
+	@Autowired
+    private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+
+    @Autowired
+    private JwtRequestFilter jwtRequestFilter;
+
+    @Autowired
+    private JwtUserDetailsService jwtUserDetailsService;
+    
+    @Autowired
+    private CustomOauth2UserService customOauth2UserService;
+
+    @Autowired
+    private OAuth2SuccessHandler oAuth2SuccessHandler;
+
+    @Autowired
+    private OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
+
+    @Autowired
+    private HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository;
+
+    @Bean
+    public HttpCookieOAuth2AuthorizationRequestRepository cookieAuthorizationRequestRepository() {
+        return new HttpCookieOAuth2AuthorizationRequestRepository();
+    }
 	
 	@Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -51,22 +74,52 @@ public class SecurityConfig {
 	    .and()
 	        .httpBasic().disable()
 	        .formLogin().disable()
-	        .addFilter(jwtAuthorizationFilter())
-	        .addFilter(new JwtAuthenticationFilter(authenticationManager()))
-	        .addFilter(new JwtAuthorizationFilter(authenticationManager(), userRepository))
 	        .authorizeRequests()
-	        .antMatchers("/","/user/**","/manager/**","/region/**","/article/**").permitAll()// user로 들어오는 경로 모두 허용
+	        .antMatchers("/**","/user/**","/manager/**","/region/**","/article/**").permitAll()// user로 들어오는 경로 모두 허용
 			.antMatchers("/admin/**").hasRole("ADMIN") // Admin만 가능
-			.anyRequest().authenticated(); // 다른 요청은 인증이 되어야한다.
-
+			.anyRequest().authenticated()
+		.and()
+			.exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint)
+		.and()
+    		.oauth2Login()
+    		.authorizationEndpoint()
+            .authorizationRequestRepository(cookieAuthorizationRequestRepository())
+            .baseUri("/oauth2/authorization")
+        .and()
+            .redirectionEndpoint()
+            .baseUri("/oauth2/callback/*")
+        .and()
+            .userInfoEndpoint()
+            .userService(customOauth2UserService)
+        .and()
+            .successHandler(oAuth2SuccessHandler)
+            .failureHandler((AuthenticationFailureHandler) oAuth2AuthenticationFailureHandler);
+        
+        http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+        
         return http.build(); 
     }
+	
+	@Bean // Ioc
+	public BCryptPasswordEncoder endodePw() {
+		return new BCryptPasswordEncoder();
+	}
 	
 	@Bean
     public AuthenticationManager authenticationManager() throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
+	
+	@Bean
+    public DaoAuthenticationProvider authenticationProvider(){
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(jwtUserDetailsService);
+        authProvider.setPasswordEncoder(endodePw());
 
+        return authProvider;
+    }
+
+	//CORS config
 	@Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
@@ -84,7 +137,7 @@ public class SecurityConfig {
 	//login 경로 변경 필터
 	public JwtAuthenticationFilter jwtAuthorizationFilter() throws Exception {
 	    JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(authenticationManager());
-	    jwtAuthenticationFilter.setFilterProcessesUrl("/user/sign-in");
+	   // jwtAuthenticationFilter.setFilterProcessesUrl("/user/sign-in");
 	    return jwtAuthenticationFilter;
 	}
 	

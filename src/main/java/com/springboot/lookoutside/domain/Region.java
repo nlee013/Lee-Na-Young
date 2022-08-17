@@ -1,8 +1,11 @@
 package com.springboot.lookoutside.domain;
 
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 import org.hibernate.annotations.DynamicInsert;
 
@@ -27,5 +30,6 @@ public class Region {
 	
 	@Column
 	private String regAddr2;
+	
 	
 }

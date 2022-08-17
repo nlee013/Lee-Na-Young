@@ -4,7 +4,6 @@ import java.sql.Timestamp;
 //import java.security.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,6 +12,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -39,7 +39,7 @@ public class Article{
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int artNo;
 	
-	@JoinColumn(nullable = false)
+	@Column(nullable = false)
 	private int useNo;
 	
 	@Column(nullable = false)
@@ -52,22 +52,14 @@ public class Article{
 	@CreationTimestamp
 	@Column(updatable = false)
 	private Timestamp artCreated;
-	//@UpdateTimestamp
-	//private LocalDateTime art_updated;
 	
 	@Column(nullable = false)
 	private int artCategory;
 	
-	@JoinColumn(nullable = false)
-	private String regNo;
-	
 	@Column(nullable = false)
 	private int artWSelect;
-	
-	//��� ��������
-//	@OneToMany(mappedBy = "article", fetch = FetchType.LAZY)
-//	private List<ArticleReply> articleReply;
-	
-	//private String art_heart; //�ļ���
 
+	@Column(nullable = false)
+	private String regNo;
+	
 }
