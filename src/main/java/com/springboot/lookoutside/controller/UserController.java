@@ -2,6 +2,9 @@ package com.springboot.lookoutside.controller;
 
 import java.util.Optional;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -31,6 +34,13 @@ public class UserController {
 		userService.signUp(user);
 		return new ResponseDto<Integer>(HttpStatus.OK.value(),1); // Java 오브젝트를 Json으로 변경
 	}
+	
+	@PostMapping("/sign-in")
+    public ResponseDto<HttpServletResponse> login(HttpServletRequest request, HttpServletResponse response) throws IllegalAccessException {
+		
+        return new ResponseDto<HttpServletResponse>(HttpStatus.OK.value(),response);
+        
+    }
 	
 	//닉네임 중복확인
 	@GetMapping("/Nickname/{useNick}")

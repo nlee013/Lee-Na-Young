@@ -19,6 +19,8 @@ import com.springboot.lookoutside.config.auth.PrincipalDetails;
 import com.springboot.lookoutside.domain.User;
 import com.springboot.lookoutside.repository.UserRepository;
 
+
+//인가!!!
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter{
 	
 	private UserRepository userRepository;
@@ -51,7 +53,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter{
 		
 		if(useId != null) {	
 			User user = userRepository.findByUseId(useId).orElseThrow(() -> { 
-				return new IllegalArgumentException("해당 id는 존재하지않습니다.");
+				return new IllegalArgumentException("해당 ID는 존재하지않습니다.");
 			}); // 존재하므로 userEntity 값을 가져옴
 			
 			// 인증은 토큰 검증시 끝. 인증을 하기 위해서가 아닌 스프링 시큐리티가 수행해주는 권한 처리를 위해 
@@ -60,7 +62,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter{
 			Authentication authentication =
 					new UsernamePasswordAuthenticationToken(
 							principalDetails, //나중에 컨트롤러에서 DI해서 쓸 때 사용하기 편함.
-							null, // 패스워드는 모르니까 null 처리, 어차피 지금 인증하는게 아니니까!!
+							null, // 패스워드는 모르니까 null 처리, 어차피 지금 인증하는게 아니니까!! credential
 							principalDetails.getAuthorities());
 			
 			// 강제로 시큐리티의 세션에 접근하여 값 저장

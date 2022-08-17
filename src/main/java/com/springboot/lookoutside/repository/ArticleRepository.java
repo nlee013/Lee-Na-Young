@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.springboot.lookoutside.domain.Article;
+import com.springboot.lookoutside.dto.ArticleDto;
 
 @Repository
 public interface ArticleRepository extends JpaRepository<Article, Integer>{
@@ -33,4 +34,14 @@ public interface ArticleRepository extends JpaRepository<Article, Integer>{
 	//Img테이블에 artNo을 주기 위함
 	@Query(value = "SELECT artNo FROM lo.Article ORDER BY artCreated DESC LIMIT 1", nativeQuery = true)
 	Optional<Integer> findArtNo();	
+	
+	// DTO로 직접 조회
+	@Query(value = "select "
+			+ "new com.springboot.lookoutside.dto.ArticleDto"
+			+ "(a.artNo, a.artCategory, a.artContents, a.artSubject, a.artWSelect, r.regAddr1, r.regAddr2) "
+			+ "from lo.Article a join lo.Region r "
+			+ "on a.regNo = r.regNo "
+			+ "where a.useNo=? ", nativeQuery = true)
+    Page<ArticleDto> findAllArticleDto(int useNo, Pageable pageable);
+	
 }
