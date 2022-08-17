@@ -15,4 +15,6 @@ public interface RegionRepository extends JpaRepository<Region, String>{ // <테
 
 	List<Region> findByRegNoStartingWith(String regNo);
 	
+	Region findByRegNo(String regNo);
+	
 }

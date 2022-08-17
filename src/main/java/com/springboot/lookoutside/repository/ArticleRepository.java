@@ -1,14 +1,17 @@
 package com.springboot.lookoutside.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.springboot.lookoutside.domain.Article;
+import com.springboot.lookoutside.dto.ArticleMapping;
 
 @Repository
 public interface ArticleRepository extends JpaRepository<Article, Integer>{
@@ -33,4 +36,8 @@ public interface ArticleRepository extends JpaRepository<Article, Integer>{
 	//Img테이블에 artNo을 주기 위함
 	@Query(value = "SELECT artNo FROM lo.Article ORDER BY artCreated DESC LIMIT 1", nativeQuery = true)
 	Optional<Integer> findArtNo();	
+	
+	@Query(value = "select a.*, u.useNick, r.regAddr1, r.regAddr2 from lo.Article a join lo.Region r on a.regNo = r.regNo join lo.User u on a.useNo = u.useNo where u.useNo = ?1", nativeQuery = true)
+	Page<ArticleMapping> findAllBy(int useNo, Pageable pageable);
+	
 }

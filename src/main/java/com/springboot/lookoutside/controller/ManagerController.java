@@ -62,4 +62,10 @@ public class ManagerController {
 		return new ResponseDto<Page<Article>>(HttpStatus.OK.value(), articleList);
 	}
 
+	//게시물 선택 삭제
+	@DeleteMapping("/article/{artNos}")
+	public ResponseDto<String> deleteCheckArticle(@PathVariable int[] artNos) {
+		String result = managerService.deleteCheckArticle(artNos);
+		return new ResponseDto<String>(HttpStatus.OK.value(), result);
+	}
 }

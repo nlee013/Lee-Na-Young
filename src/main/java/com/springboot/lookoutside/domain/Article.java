@@ -57,9 +57,9 @@ public class Article{
 	private int artCategory;
 	
 	@Column(nullable = false)
-	private String regNo;
-	
-	@Column(nullable = false)
 	private int artWSelect;
 
+	@Column(nullable = false)
+	private String regNo;
+	
 }

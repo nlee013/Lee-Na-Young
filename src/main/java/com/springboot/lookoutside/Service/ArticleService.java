@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Vector;
 
 import javax.transaction.Transactional;
 
@@ -12,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.Model;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -21,10 +19,14 @@ import com.springboot.lookoutside.domain.Article;
 import com.springboot.lookoutside.domain.ArticleImg;
 import com.springboot.lookoutside.domain.ArticleReply;
 import com.springboot.lookoutside.domain.Region;
+import com.springboot.lookoutside.domain.User;
+import com.springboot.lookoutside.dto.ArticleDto;
+import com.springboot.lookoutside.dto.ArticleMapping;
 import com.springboot.lookoutside.repository.ArticleImgRepository;
 import com.springboot.lookoutside.repository.ArticleReplyRepository;
 import com.springboot.lookoutside.repository.ArticleRepository;
 import com.springboot.lookoutside.repository.RegionRepository;
+import com.springboot.lookoutside.repository.UserRepository;
 
 import lombok.AllArgsConstructor;
 
@@ -42,50 +44,29 @@ public class ArticleService {
 	private ArticleReplyRepository articleReplyRepository;
 	
 	@Autowired
+	private UserRepository userRepository;
+	
+	@Autowired
 	private RegionRepository regionRepository;
-
-	//페이징
-	private static final int BlockPageNumCount = 5;
-	private static final int PageCount = 12;
 
 	//게시물 목록
 	@Transactional
-	public Page<Article> articleList(int useNo, Pageable pageable){
+	public Page<Article> articleTest(int useNo, Pageable pageable){
 
 		Page<Article> articlePage = articleRepository.findAllByUseNo(useNo, pageable);
 
 		return articlePage;
 
 	}
-
-	//게시물 갯수
+	
+	//게시물 목록
 	@Transactional
-	public long getArticleCount() {
-		return articleRepository.count();
-	}
+	public Page<ArticleMapping> articleList(int useNo, Pageable pageable){
 
-	//게시물 페이징
-	public Integer[] getPageList(Integer currentPageNum) {
-		Integer[] pageList = new Integer[BlockPageNumCount];
+		Page<ArticleMapping> articlePage = articleRepository.findAllBy(useNo, pageable);
 
-		//총 게시물 갯수
-		Double totalCount = Double.valueOf(this.getArticleCount());
+		return articlePage;
 
-		//총 게시물 기준으로 계산한 마지막 페이지 번호 계산(올림 계산)
-		Integer totalLastPageNum = (int)(Math.ceil(totalCount/PageCount));
-
-		//현재 페이지를 기준으로 블럭의 마지막 페이지 번호 계산
-		Integer blockLastPageNum = (totalLastPageNum > currentPageNum + BlockPageNumCount) ? currentPageNum + BlockPageNumCount : totalLastPageNum;
-
-		//페이지 시작 번호 조정
-		currentPageNum = (currentPageNum <= 3)? 1: currentPageNum - 2;
-
-		//페이지 번호 할당
-		for(int val = currentPageNum, idx = 0; val <= blockLastPageNum; val++, idx++) {
-			pageList[idx] = val;
-		}
-
-		return pageList;
 	}
 
 	//게시물 등록
@@ -166,24 +147,45 @@ public class ArticleService {
 		
 		String regNo = article.getRegNo();
 		
+		User user = userRepository.findByUseNo2(article.getUseNo());
+		
 		List<ArticleImg> articleImg = articleImgRepository.findAllByArtNo(artNo);
 		
 		List<ArticleReply> articleReply = articleReplyRepository.findAllByArtNo(artNo);
 		
-		List<Region> region = regionRepository.findByRegNoStartingWith(regNo);
+		Region region = regionRepository.findByRegNo(regNo);
 		
 		Map<String, Object> detail = new HashMap<String, Object>();
 		
+		/*
+		ArticleDto articleDto = new ArticleDto();
+		
+		articleDto.setArtNo(artNo);
+		articleDto.setUseNo(article.getUseNo());
+		articleDto.setUseNick(user.getUseNick());
+		articleDto.setArtWSelect(article.getArtWSelect());
+		articleDto.setArtCategory(article.getArtCategory());
+		articleDto.setArtSubject(article.getArtSubject());
+		articleDto.setArtContents(article.getArtSubject());
+		articleDto.setArtCreated(article.getArtCreated());
+		articleDto.setRegNo(regNo);
+		articleDto.setRegAddr1(region.getRegAddr1());
+		articleDto.setRegAddr2(region.getRegAddr2());
+		
+		detail.put("articleDto", articleDto);
+		*/
 		detail.put("article", article);
+		detail.put("region", region);
 		detail.put("articleImg", articleImg);
 		detail.put("articleReply", articleReply);
-		detail.put("region", region);
+		
+		//System.out.println(articleRepository.findAllByRegNoQuery(regNo));
 
 		return detail;
 
 	}
 	
-	//카테고리,지역별 게시물 목록 조회
+	//카테고리, 지역별 게시물 목록 조회
 	@Transactional
 	public Page<Article> articleListCateRegNo(int artCategory, String regNo, Pageable pageable){
 
