@@ -84,5 +84,20 @@ public class ManagerService {
 
 		return articlePage;
 	}
+	
+	//회원 선택 삭제
+	@Transactional
+	public String deleteCheckArticle(int[] artNos) {
+
+		for(int artNo : artNos) {
+
+			articleRepository.findById(artNo).orElseThrow(() -> { 
+				return new IllegalArgumentException("0");
+			});
+
+			articleRepository.deleteById(artNo);
+		}
+		return "1";
+	}
 
 }
