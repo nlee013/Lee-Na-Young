@@ -36,11 +36,11 @@ public class UserService {
 	//마이페이지
 	@Transactional
 	public Optional<User> myPageInfo(int useNo) {
-		/*
+		
 		userRepository.findByUseNo(useNo).orElseThrow(() -> { 
 			return new IllegalArgumentException("존재하지 않는 아이디");
 		});
-		*/
+		
 		return userRepository.findByUseNo(useNo);
 	}
 	
