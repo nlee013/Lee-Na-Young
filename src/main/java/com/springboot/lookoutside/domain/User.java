@@ -4,6 +4,8 @@ import java.sql.Timestamp;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -27,7 +29,7 @@ import lombok.NoArgsConstructor;
 @DynamicInsert 
 public class User {
 
-	@Id 
+	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY) 
 	private int useNo; 
 	
@@ -56,6 +58,8 @@ public class User {
 	@CreationTimestamp 
 	private Timestamp useCreated;
 	
-	private String provider;
-	private String providerId;
+	@Column
+    @Enumerated(EnumType.STRING)
+	private Provider provider;
+
 }

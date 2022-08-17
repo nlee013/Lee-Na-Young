@@ -28,6 +28,12 @@ public interface UserRepository extends JpaRepository<User, Integer>{ // <테이
 	Optional<User> findByUseEmail(String useEmail);
 	Optional<User> findByUseNo(int useNo);
 	
+	@Query(value = "select * from lo.User where useNo = ?1" , nativeQuery =true)
+	User findByUseNo2(int useNo);
+	
+	@Query(value = "select * from lo.User where useEmail = ?1" , nativeQuery =true)
+	User findByUseEmail2(String useEmail);
+	
 	boolean existsByUseId(String useId);
 	boolean existsByUseNick(String useNick);
 	boolean existsByUseEmail(String useEmail);

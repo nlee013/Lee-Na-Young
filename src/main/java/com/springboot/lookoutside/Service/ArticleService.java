@@ -21,6 +21,7 @@ import com.springboot.lookoutside.domain.Article;
 import com.springboot.lookoutside.domain.ArticleImg;
 import com.springboot.lookoutside.domain.ArticleReply;
 import com.springboot.lookoutside.domain.Region;
+import com.springboot.lookoutside.dto.ArticleDto;
 import com.springboot.lookoutside.repository.ArticleImgRepository;
 import com.springboot.lookoutside.repository.ArticleReplyRepository;
 import com.springboot.lookoutside.repository.ArticleRepository;
@@ -50,42 +51,12 @@ public class ArticleService {
 
 	//게시물 목록
 	@Transactional
-	public Page<Article> articleList(int useNo, Pageable pageable){
+	public Page<ArticleDto> articleList(int useNo, Pageable pageable){
 
-		Page<Article> articlePage = articleRepository.findAllByUseNo(useNo, pageable);
+		Page<ArticleDto> articlePage = articleRepository.findAllArticleDto(useNo, pageable);
 
 		return articlePage;
 
-	}
-
-	//게시물 갯수
-	@Transactional
-	public long getArticleCount() {
-		return articleRepository.count();
-	}
-
-	//게시물 페이징
-	public Integer[] getPageList(Integer currentPageNum) {
-		Integer[] pageList = new Integer[BlockPageNumCount];
-
-		//총 게시물 갯수
-		Double totalCount = Double.valueOf(this.getArticleCount());
-
-		//총 게시물 기준으로 계산한 마지막 페이지 번호 계산(올림 계산)
-		Integer totalLastPageNum = (int)(Math.ceil(totalCount/PageCount));
-
-		//현재 페이지를 기준으로 블럭의 마지막 페이지 번호 계산
-		Integer blockLastPageNum = (totalLastPageNum > currentPageNum + BlockPageNumCount) ? currentPageNum + BlockPageNumCount : totalLastPageNum;
-
-		//페이지 시작 번호 조정
-		currentPageNum = (currentPageNum <= 3)? 1: currentPageNum - 2;
-
-		//페이지 번호 할당
-		for(int val = currentPageNum, idx = 0; val <= blockLastPageNum; val++, idx++) {
-			pageList[idx] = val;
-		}
-
-		return pageList;
 	}
 
 	//게시물 등록
@@ -183,7 +154,7 @@ public class ArticleService {
 
 	}
 	
-	//카테고리,지역별 게시물 목록 조회
+	//카테고리, 지역별 게시물 목록 조회
 	@Transactional
 	public Page<Article> articleListCateRegNo(int artCategory, String regNo, Pageable pageable){
 

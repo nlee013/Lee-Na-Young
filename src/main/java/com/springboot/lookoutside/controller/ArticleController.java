@@ -26,6 +26,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.springboot.lookoutside.domain.Article;
 import com.springboot.lookoutside.domain.ArticleReply;
+import com.springboot.lookoutside.dto.ArticleDto;
 import com.springboot.lookoutside.dto.ResponseDto;
 import com.springboot.lookoutside.service.ArticleImgService;
 import com.springboot.lookoutside.service.ArticleReplyService;
@@ -59,9 +60,9 @@ public class ArticleController {
 	
 	//내가 쓴 게시물 목록
 	@GetMapping("/list/{useNo}")
-	public ResponseDto<Page<Article>> articlelist(@PathVariable int useNo, @PageableDefault(size=5, sort="artNo", direction = Sort.Direction.DESC) Pageable pageable){
-		Page<Article> articleList = articleService.articleList(useNo, pageable);
-		return new ResponseDto<Page<Article>>(HttpStatus.OK.value(), articleList);
+	public ResponseDto<Page<ArticleDto>> articlelist(@PathVariable int useNo, @PageableDefault(size=5, sort="artNo", direction = Sort.Direction.DESC) Pageable pageable){
+		Page<ArticleDto> articleList = articleService.articleList(useNo, pageable);
+		return new ResponseDto<Page<ArticleDto>>(HttpStatus.OK.value(), articleList);
 	}
 
 	//게시물 작성 + 이미지 파일 첨부
