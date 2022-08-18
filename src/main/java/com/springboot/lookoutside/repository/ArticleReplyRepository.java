@@ -18,4 +18,6 @@ public interface ArticleReplyRepository extends JpaRepository<ArticleReply, Inte
 	//게시물에 대한 댓글 조회
 	List<ArticleReply> findAllByArtNo(int artNo);
 	
+	//마이페이지 - 댓글 목록
+	List<ArticleReply> findAllByUseNo(int useNo);
 }
