@@ -59,12 +59,7 @@ public class ArticleController {
 		return "article/upload.html";
 	}
 	
-	@GetMapping("/test/{useNo}")
-	public ResponseDto<Page<Article>> articlelist(@PathVariable int useNo, @PageableDefault(size=5, sort="artNo", direction = Sort.Direction.DESC) Pageable pageable){
-		Page<Article> articleList = articleService.articleTest(useNo, pageable);
-		return new ResponseDto<Page<Article>>(HttpStatus.OK.value(), articleList);
-	}
-	
+	//페이징
 	//내가 쓴 게시물 목록
 	@GetMapping("/list/{useNo}")
 	public ResponseDto<Page<ArticleMapping>> test(@PathVariable int useNo, @PageableDefault(size=5, sort="artNo", direction = Sort.Direction.DESC) Pageable pageable){
@@ -147,41 +142,6 @@ public class ArticleController {
 		return new ResponseDto<Page<Article>>(HttpStatus.OK.value(), articleList);
 
 	}
-
-	//댓글 등록
-	//@PostMapping("/{artNo}/reply")
-	//public ResponseDTO<Integer> articleReplySave (@RequestBody ArticleReplyDTO articleReplyDTO) {
-
-	//int saveReply = articleService.saveReply(articleReplyDTO);
-	//System.out.println("댓글 쓰기");
-
-	//articleReplyService.replySave(findArticle, articleReplyDTO.getRepContents());
-
-	//return new ResponseDTO<Integer>(HttpStatus.OK.value(), saveReply);
-
-	//}
-
-	//댓글 수정
-	@PutMapping("/{artNo}/reply/{replyNo}")
-	public ResponseDto<ArticleReply> articleReplyUpdate (@PathVariable int replyNo) {
-
-		ArticleReply replyUpdate = articleReplyService.replyUpdate(replyNo);
-		System.out.println("댓글 수정하기");
-
-		return new ResponseDto<ArticleReply>(HttpStatus.OK.value(), replyUpdate);
-
-	}
-
-	//댓글 삭제
-	@DeleteMapping("/{artNo}/reply/{replyNo}")
-	public ResponseDto<ArticleReply> articleReplyDelete (@PathVariable int replyNo) {
-
-		ArticleReply replyDelete = articleReplyService.replyDelete(replyNo);
-		System.out.println("댓글 삭제하기");
-
-		return new ResponseDto<ArticleReply>(HttpStatus.OK.value(), replyDelete);
-
-	}
 	
 	//게시물 카테고리,지역별 조회
 	@GetMapping("/list/{artCategory}/{regNo}")
@@ -190,15 +150,49 @@ public class ArticleController {
 		return new ResponseDto<Page<Article>>(HttpStatus.OK.value(), articleList);
 	}
 
-	//	//댓글 목록
-	//	@GetMapping("/{artNo}/reply/{replyNo}")
-	//	public ResponseDTO<List<ArticleReply>> articleReplyList (@PathVariable int replyNo, @RequestBody ArticleReplyDTO articleReplyDTO) {
-	//					
-	//		ArticleReply replyList = articleReplyService.replyList(replyNo);
-	//		System.out.println("댓글 목록 불러오기");
-	//		
-	//		return new ResponseDTO<List<ArticleReply>>(HttpStatus.OK.value(), replyList);
-	//					
-	//	}
+	//댓글 등록
+	@PostMapping("/{artNo}/reply")
+	public ResponseDto<String> saveReply(@RequestBody ArticleReply articleReply) {
+			
+		String saveReply = articleReplyService.saveReply(articleReply);
+		System.out.println("controller : 댓글 쓰기");
+			
+		return new ResponseDto<String>(HttpStatus.OK.value(), saveReply);
+			
+	}
 
+	//댓글 수정
+	@PutMapping("/{artNo}/reply/{repNo}")
+	public ResponseDto<Integer> updateReply(@PathVariable int repNo, @RequestBody ArticleReply articleReply) {
+				
+		articleReplyService.updateReply(repNo, articleReply);
+		System.out.println("controller : 댓글 수정하기");
+		
+		return new ResponseDto<Integer>(HttpStatus.OK.value(), 1);
+				
+	}
+	
+	//댓글 삭제
+	@DeleteMapping("/{artNo}/reply/{repNo}")
+	public ResponseDto<Integer> deleteReply (@PathVariable int repNo) {
+				
+		articleReplyService.deleteReply(repNo);
+		System.out.println("controller : 댓글 삭제하기");
+
+		return new ResponseDto<Integer>(HttpStatus.OK.value(), 1);
+				
+	}
+
+	//댓글 목록
+	@GetMapping("/{artNo}/reply")
+	public ResponseDto<List<ArticleReply>> replyList (@PathVariable int artNo) {
+					
+		List<ArticleReply> replyList = articleReplyService.replyList(artNo);
+		System.out.println("controller : 댓글 목록 불러오기");
+		
+		return new ResponseDto<List<ArticleReply>>(HttpStatus.OK.value(), replyList);
+					
+	}
+	
+	
 }
