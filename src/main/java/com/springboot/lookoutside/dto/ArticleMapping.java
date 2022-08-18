@@ -26,6 +26,8 @@ public interface ArticleMapping {
 
 	String getRegAddr2();
 	
+	String getImgSave();
+	
 	@JsonFormat(pattern = "YY.MM.dd HH:mm:ss", timezone = "Asia/Seoul")
 	Timestamp getArtCreated();
 	

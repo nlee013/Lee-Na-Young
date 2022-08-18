@@ -1,5 +1,8 @@
 package com.springboot.lookoutside.service;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -70,21 +73,64 @@ public class ManagerService {
 
 	//게시물 목록 조회
 	@Transactional
-	public Page<Article> articleList(Pageable pageable){
+	public Map<String, Object> articleList(Pageable pageable){
 
-		Page<Article> articlePage = articleRepository.findAll(pageable);
+		Page<ArticleMapping> articlePage = articleRepository.findList(pageable);
 
-		return articlePage;
+		int numberOfElements = articlePage.getNumberOfElements();
+		long totalElements = articlePage.getTotalElements();
+		int number = articlePage.getNumber();
+		int totalPages = articlePage.getTotalPages();
+		int size = articlePage.getSize();
+		
+		Map<String, Object> pageAble = new HashMap<String, Object>();
+		
+		pageAble.put("numberOfElements", numberOfElements);
+		pageAble.put("totalElements", totalElements);
+		pageAble.put("number", number);
+		pageAble.put("totalPages", totalPages);
+		pageAble.put("size", size);
+		pageAble.put("offset", articlePage.getPageable().getOffset());
+		
+		Map<String, Object> article = new HashMap<String, Object>();
+		
+		article.put("list", articlePage.getContent());
+		article.put("pageable", pageAble);
+		
+		return article;
+
 	}
 
 	//카테고리별 게시물 목록 조회
 	@Transactional
-	public Page<ArticleMapping> articleListCate(int artCategory, Pageable pageable){
+	public Map<String, Object> articleListCate(int artCategory, Pageable pageable){
 
 		Page<ArticleMapping> articlePage = articleRepository.findAllByArtCategory(artCategory, pageable);
+		
+		int numberOfElements = articlePage.getNumberOfElements();
+		long totalElements = articlePage.getTotalElements();
+		int number = articlePage.getNumber();
+		int totalPages = articlePage.getTotalPages();
+		int size = articlePage.getSize();
+		
+		Map<String, Object> pageAble = new HashMap<String, Object>();
+		
+		pageAble.put("numberOfElements", numberOfElements);
+		pageAble.put("totalElements", totalElements);
+		pageAble.put("number", number);
+		pageAble.put("totalPages", totalPages);
+		pageAble.put("size", size);
+		pageAble.put("offset", articlePage.getPageable().getOffset());
+		
+		Map<String, Object> article = new HashMap<String, Object>();
+		
+		article.put("list", articlePage.getContent());
+		article.put("pageable", pageAble);
+		
+		return article;
 
-		return articlePage;
 	}
+	
 	
 	//회원 선택 삭제
 	@Transactional

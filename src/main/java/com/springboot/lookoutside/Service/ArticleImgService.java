@@ -25,11 +25,20 @@ public class ArticleImgService {
 	@Autowired
 	private ArticleImgRepository articleImgRepository;
 	
-	@Autowired
-	private ArticleRepository articleRepository;
+	@Transactional
+	public String nullImg(int artNo) {
+		
+		ArticleImg articleImg = new ArticleImg();
+		
+		articleImg.setArtNo(artNo);
+		articleImg.setImgNo(1);
+		articleImgRepository.save(articleImg);
+		
+		return "";
+	}
 	
 	@Transactional
-	public String saveImg(MultipartFile file) {
+	public String saveImg(int artNo, MultipartFile file) {
 		
 		ArticleImg articleImg = new ArticleImg();
 		
@@ -61,16 +70,9 @@ public class ArticleImgService {
 			e.printStackTrace();
 		}
 		
-		articleImg = new ArticleImg();
-		
 		articleImg.setImgSave(saveImgName);
 		articleImg.setImgOrigin(imgOriName);
 		articleImg.setImgPath(filePath);	
-		
-		int artNo = articleRepository.findArtNo().orElseThrow(() -> {
-			
-			return new IllegalArgumentException("게시물 등록 실패");
-		 });
 		
 		articleImg.setArtNo(artNo);
 		

@@ -15,7 +15,7 @@ public class ArticleReplyService {
 
 	@Autowired
 	private ArticleReplyRepository articleReplyRepository;
-
+	
 	//댓긇 등록
 	@Transactional
 	public String saveReply(ArticleReply articleReply) {
@@ -51,11 +51,19 @@ public class ArticleReplyService {
 	}
 
 	//댓글 목록
-	public List<ArticleReply> replyList(int repNo, int artNo, ArticleReply articleReply) {
+	public List<ArticleReply> replyList(int artNo) {
 		
 		List<ArticleReply> replyList = articleReplyRepository.findAllByArtNo(artNo);
 		
 		return replyList;
+	}
+
+	//마이페이지 - 댓글 목록
+	public List<ArticleReply> replyListMypage(int useNo) {
+		
+		List<ArticleReply> replyListMypage = articleReplyRepository.findAllByUseNo(useNo);
+		
+		return replyListMypage;
 	}
 	
 	
