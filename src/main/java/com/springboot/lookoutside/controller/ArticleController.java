@@ -66,6 +66,15 @@ public class ArticleController {
 		Page<ArticleMapping> articleList = articleService.articleList(useNo, pageable);
 		return new ResponseDto<Page<ArticleMapping>>(HttpStatus.OK.value(), articleList);
 	}
+	
+	//마이페이지 - 댓글목록
+	@GetMapping("/reply/{useNo}")
+	public ResponseDto<List<ArticleReply>> replyListMypage(@PathVariable int useNo){
+		
+		List<ArticleReply> replyListMypage = articleReplyService.replyListMypage(useNo);
+		
+		return new ResponseDto<List<ArticleReply>>(HttpStatus.OK.value(), replyListMypage);		
+	}
 
 	//게시물 작성 + 이미지 파일 첨부
 	@PostMapping("/post")
