@@ -61,11 +61,30 @@ public class ArticleService {
 	
 	//게시물 목록
 	@Transactional
-	public Page<ArticleMapping> articleList(int useNo, Pageable pageable){
+	public Map<String, Object> articleList(int useNo, Pageable pageable){
 
 		Page<ArticleMapping> articlePage = articleRepository.findAllBy(useNo, pageable);
 
-		return articlePage;
+		int numberOfElements = articlePage.getNumberOfElements();
+		long totalElements = articlePage.getTotalElements();
+		int number = articlePage.getNumber();
+		int totalPages = articlePage.getTotalPages();
+		int size = articlePage.getSize();
+		
+		Map<String, Object> pageAble = new HashMap<String, Object>();
+		
+		pageAble.put("numberOfElements", numberOfElements);
+		pageAble.put("totalElements", totalElements);
+		pageAble.put("number", number);
+		pageAble.put("totalPages", totalPages);
+		pageAble.put("size", size);
+		
+		Map<String, Object> article = new HashMap<String, Object>();
+		
+		article.put("list",articlePage.getContent());
+		article.put("pageable", pageAble);
+		
+		return article;
 
 	}
 

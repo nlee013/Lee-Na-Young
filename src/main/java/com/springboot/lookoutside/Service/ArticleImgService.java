@@ -33,7 +33,7 @@ public class ArticleImgService {
 		
 		ArticleImg articleImg = new ArticleImg();
 		
-		String uploadPath  = "C:\\sts-bundle\\work\\Back-End_Nayoung\\Look-Outside\\src\\main\\resources\\static\\images";
+		String uploadPath  = "D:\\images";
 		
 		String imgOriName = file.getOriginalFilename(); //filename.jpg	
 		
@@ -84,24 +84,23 @@ public class ArticleImgService {
 	}
 
 	//게시물 수정
-	public String updateImg(MultipartFile file) {
+	public String updateImg(int artNo, MultipartFile file) {
 		
 		ArticleImg articleImg = new ArticleImg();
 		
-		String updatePath  = "C:\\sts-bundle\\work\\Back-End_Nayoung\\Look-Outside\\src\\main\\resources\\static\\images";
+		String uploadPath  = "D:\\images";
 		
 		String imgOriName = file.getOriginalFilename(); //filename.jpg	
 		
 		String saveImgName = (new Date().getTime()) + "" + (file.getOriginalFilename()); // 현재 날짜와 랜덤 정수값으로 새로운 파일명 만들기
 		
 		String fileExtension = imgOriName.substring(imgOriName.lastIndexOf(".") + 1); // ex) jpg
-		
 		imgOriName = imgOriName.substring(0, imgOriName.lastIndexOf(".")); // ex) 파일
+		//long fileSize = file.getSize(); // 파일 사이즈
+		String filePath = uploadPath + "\\" + saveImgName;
 		
-		String filePath = updatePath + "\\" + saveImgName;
 		
-		
-		File fileSave = new File(updatePath, saveImgName);
+		File fileSave = new File(uploadPath, saveImgName);
 		
 		if(!fileSave.exists()) { 
 			fileSave.mkdirs();
@@ -119,14 +118,9 @@ public class ArticleImgService {
 		
 		articleImg = new ArticleImg();
 		
-		articleImg.setImgSave(articleImg.getImgSave());
+		articleImg.setImgSave(saveImgName);
 		articleImg.setImgOrigin(imgOriName);
 		articleImg.setImgPath(filePath);	
-		
-		int artNo = articleRepository.findArtNo().orElseThrow(() -> {
-			
-			return new IllegalArgumentException("게시물 수정 실패");
-		 });
 		
 		articleImg.setArtNo(artNo);
 		
@@ -136,19 +130,7 @@ public class ArticleImgService {
 		
 		articleImgRepository.save(articleImg);
 		
-		Article article = new Article();
-		
-		Article update = articleRepository.findByArtNo(artNo).orElseThrow(() -> {
-			
-			return new IllegalArgumentException("게시물 수정을 실패하였습니다.");
-		});
-		
-		update.setArtSubject(article.getArtSubject());
-		update.setArtContents(article.getArtContents());
-		update.setRegNo(article.getRegNo());
-		update.setArtWSelect(article.getArtWSelect());
-		
-		return "게시물 수정 완료";
+		return "게시물 이미지 첨부 완료";
 	}
 	
 	//이미지 파일 삭제
