@@ -1,5 +1,7 @@
 package com.springboot.lookoutside.controller;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -51,16 +53,16 @@ public class ManagerController {
 
 	//게시물 전체 목록 조회
 	@GetMapping("/article")
-	public ResponseDto<Page<Article>> articleListCate(@PageableDefault(size=5, sort="artNo", direction = Sort.Direction.DESC) Pageable pageable){
-		Page<Article> articleList = managerService.articleList(pageable);
-		return new ResponseDto<Page<Article>>(HttpStatus.OK.value(), articleList);
+	public ResponseDto<Map<String, Object>> articleList(@PageableDefault(size=5, sort="artNo", direction = Sort.Direction.DESC) Pageable pageable){
+		Map<String, Object> articleList = managerService.articleList(pageable);
+		return new ResponseDto<Map<String, Object>>(HttpStatus.OK.value(), articleList);
 	}
 
 	//게시물 카테고리별 목록 조회
 	@GetMapping("/article/{artCategory}")
-	public ResponseDto<Page<ArticleMapping>> articleListCate(@PathVariable int artCategory, @PageableDefault(size=5, sort="artNo", direction = Sort.Direction.DESC) Pageable pageable){
-		Page<ArticleMapping> articleList = managerService.articleListCate(artCategory ,pageable);
-		return new ResponseDto<Page<ArticleMapping>>(HttpStatus.OK.value(), articleList);
+	public ResponseDto<Map<String, Object>> articleListCate(@PathVariable int artCategory, @PageableDefault(size=5, sort="artNo", direction = Sort.Direction.DESC) Pageable pageable){
+		Map<String, Object> articleList = managerService.articleListCate(artCategory ,pageable);
+		return new ResponseDto<Map<String, Object>>(HttpStatus.OK.value(), articleList);
 	}
 
 	//게시물 선택 삭제
