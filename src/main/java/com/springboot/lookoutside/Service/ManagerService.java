@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.springboot.lookoutside.domain.Article;
 import com.springboot.lookoutside.domain.User;
+import com.springboot.lookoutside.dto.ArticleMapping;
 import com.springboot.lookoutside.repository.ArticleRepository;
 import com.springboot.lookoutside.repository.UserRepository;
 
@@ -78,9 +79,9 @@ public class ManagerService {
 
 	//카테고리별 게시물 목록 조회
 	@Transactional
-	public Page<Article> articleListCate(int artCategory, Pageable pageable){
+	public Page<ArticleMapping> articleListCate(int artCategory, Pageable pageable){
 
-		Page<Article> articlePage = articleRepository.findAllByArtCategory(artCategory, pageable);
+		Page<ArticleMapping> articlePage = articleRepository.findAllByArtCategory(artCategory, pageable);
 
 		return articlePage;
 	}

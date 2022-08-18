@@ -10,6 +10,8 @@ public interface ArticleMapping {
 	
 	int getUseNo();
 	
+	int getArtCategory();
+	
 	String getUseNick();
 	
 	String getArtSubject();

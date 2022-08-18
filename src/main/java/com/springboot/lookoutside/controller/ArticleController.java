@@ -67,9 +67,9 @@ public class ArticleController {
 	
 	//내가 쓴 게시물 목록
 	@GetMapping("/list/{useNo}")
-	public ResponseDto<Page<ArticleMapping>> test(@PathVariable int useNo, @PageableDefault(size=5, sort="artNo", direction = Sort.Direction.DESC) Pageable pageable){
-		Page<ArticleMapping> articleList = articleService.articleList(useNo, pageable);
-		return new ResponseDto<Page<ArticleMapping>>(HttpStatus.OK.value(), articleList);
+	public ResponseDto<Map<String, Object>> test(@PathVariable int useNo, @PageableDefault(size=5, sort="artNo", direction = Sort.Direction.DESC) Pageable pageable){
+		Map<String, Object> articleList = articleService.articleList(useNo, pageable);
+		return new ResponseDto<Map<String, Object>>(HttpStatus.OK.value(), articleList);
 	}
 
 	//게시물 작성 + 이미지 파일 첨부
@@ -110,7 +110,7 @@ public class ArticleController {
 				
 				MultipartFile file = multipartFiles[i];
 				
-				articleImgService.saveImg(file);//이미지 파일 저장\
+				articleImgService.updateImg(artNo,file);//이미지 파일 저장\
 				
 				System.out.println("게시물 수정하기");
 			}	
@@ -165,7 +165,7 @@ public class ArticleController {
 	@PutMapping("/{artNo}/reply/{replyNo}")
 	public ResponseDto<ArticleReply> articleReplyUpdate (@PathVariable int replyNo) {
 
-		ArticleReply replyUpdate = articleReplyService.replyUpdate(replyNo);
+		ArticleReply replyUpdate = articleReplyService.updateReply(replyNo, articleReply)
 		System.out.println("댓글 수정하기");
 
 		return new ResponseDto<ArticleReply>(HttpStatus.OK.value(), replyUpdate);
