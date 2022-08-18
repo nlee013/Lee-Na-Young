@@ -2,8 +2,7 @@ package com.springboot.lookoutside.domain;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
+
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 
@@ -24,17 +23,14 @@ import lombok.ToString;
 @Entity
 public class ArticleImg {
 	
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int id;
-	
 	@JoinColumn(nullable = false)
 	private int artNo;
 	
-	@Column
+	@Column(nullable = false)
 	private String imgOrigin;
 	
-	@Column
+	@Id
+	@Column(nullable = false)
 	private String imgSave;
 	
 	@Column(nullable = false)

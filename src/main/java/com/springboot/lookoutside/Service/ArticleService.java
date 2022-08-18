@@ -20,6 +20,7 @@ import com.springboot.lookoutside.domain.ArticleImg;
 import com.springboot.lookoutside.domain.ArticleReply;
 import com.springboot.lookoutside.domain.Region;
 import com.springboot.lookoutside.domain.User;
+import com.springboot.lookoutside.dto.ArticleDto;
 import com.springboot.lookoutside.dto.ArticleMapping;
 import com.springboot.lookoutside.repository.ArticleImgRepository;
 import com.springboot.lookoutside.repository.ArticleReplyRepository;
@@ -47,40 +48,31 @@ public class ArticleService {
 	
 	@Autowired
 	private RegionRepository regionRepository;
+
+	//게시물 목록
+	@Transactional
+	public Page<Article> articleTest(int useNo, Pageable pageable){
+
+		Page<Article> articlePage = articleRepository.findAllByUseNo(useNo, pageable);
+
+		return articlePage;
+
+	}
 	
 	//게시물 목록
 	@Transactional
-	public Map<String, Object> articleList(int useNo, Pageable pageable){
+	public Page<ArticleMapping> articleList(int useNo, Pageable pageable){
 
 		Page<ArticleMapping> articlePage = articleRepository.findAllBy(useNo, pageable);
-		
-		int numberOfElements = articlePage.getNumberOfElements();
-		long totalElements = articlePage.getTotalElements();
-		int number = articlePage.getNumber();
-		int totalPages = articlePage.getTotalPages();
-		int size = articlePage.getSize();
-		
-		Map<String, Object> pageAble = new HashMap<String, Object>();
-		
-		pageAble.put("numberOfElements", numberOfElements);
-		pageAble.put("totalElements", totalElements);
-		pageAble.put("number", number);
-		pageAble.put("totalPages", totalPages);
-		pageAble.put("size", size);
-		pageAble.put("offset", articlePage.getPageable().getOffset());
-		
-		Map<String, Object> article = new HashMap<String, Object>();
-		
-		article.put("list", articlePage.getContent());
-		article.put("pageable", pageAble);
-		
-		return article;
+
+		return articlePage;
 
 	}
 
 	//게시물 등록
 	@Transactional
-	public int savePost(String articles) {
+	public String savePost(String articles) {
+
 
 		Article article = new Article() ;
 		try {
@@ -96,9 +88,7 @@ public class ArticleService {
 
 		articleRepository.save(article);
 
-		int artNo = articleRepository.save(article).getArtNo();
-		
-		return artNo;
+		return "1";
 
 	}
 
@@ -167,6 +157,23 @@ public class ArticleService {
 		
 		Map<String, Object> detail = new HashMap<String, Object>();
 		
+		/*
+		ArticleDto articleDto = new ArticleDto();
+		
+		articleDto.setArtNo(artNo);
+		articleDto.setUseNo(article.getUseNo());
+		articleDto.setUseNick(user.getUseNick());
+		articleDto.setArtWSelect(article.getArtWSelect());
+		articleDto.setArtCategory(article.getArtCategory());
+		articleDto.setArtSubject(article.getArtSubject());
+		articleDto.setArtContents(article.getArtSubject());
+		articleDto.setArtCreated(article.getArtCreated());
+		articleDto.setRegNo(regNo);
+		articleDto.setRegAddr1(region.getRegAddr1());
+		articleDto.setRegAddr2(region.getRegAddr2());
+		
+		detail.put("articleDto", articleDto);
+		*/
 		detail.put("article", article);
 		detail.put("region", region);
 		detail.put("articleImg", articleImg);
@@ -180,32 +187,19 @@ public class ArticleService {
 	
 	//카테고리, 지역별 게시물 목록 조회
 	@Transactional
-	public Map<String, Object> articleListCateRegNo(int artCategory, String regNo, Pageable pageable){
+	public Page<Article> articleListCateRegNo(int artCategory, String regNo, Pageable pageable){
 
-		Page<ArticleMapping> articlePage = articleRepository.findAllByArtCategoryAndRegNoStartingWith(artCategory, regNo, pageable);
+		Page<Article> articlePage = articleRepository.findAllByArtCategoryAndRegNoStartingWith(artCategory, regNo, pageable);
 
-		int numberOfElements = articlePage.getNumberOfElements();
-		long totalElements = articlePage.getTotalElements();
-		int number = articlePage.getNumber();
-		int totalPages = articlePage.getTotalPages();
-		int size = articlePage.getSize();
-		
-		Map<String, Object> pageAble = new HashMap<String, Object>();
-		
-		pageAble.put("numberOfElements", numberOfElements);
-		pageAble.put("totalElements", totalElements);
-		pageAble.put("number", number);
-		pageAble.put("totalPages", totalPages);
-		pageAble.put("size", size);
-		pageAble.put("offset", articlePage.getPageable().getOffset());
-		
-		Map<String, Object> article = new HashMap<String, Object>();
-		
-		article.put("list", articlePage.getContent());
-		article.put("pageable", pageAble);
-		
-		return article;
+		return articlePage;
 	}
 	
+	//	
+	//	@Transactional
+	//	public int saveReply(ArticleReplyDTO articleReplyDTO) {
+	//		
+	//		return articleReplyRepository.save(articleReplyDTO);
+	//	}
+
 
 }

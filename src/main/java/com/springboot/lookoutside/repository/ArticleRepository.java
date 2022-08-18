@@ -24,75 +24,20 @@ public interface ArticleRepository extends JpaRepository<Article, Integer>{
     Page<Article> findByArtSubjectContainingAndArtCategory(Pageable pageable,String keyword, Optional<Integer> artCategory);
 	Page<Article> findByArtContentsContainingAndArtCategory(Pageable pageable,String keyword, int artCategory);
 
-	//내가 쓴 게시물 조회(마이페이지) -> 삭제예정
+	//내가 쓴 게시물 조회
 	Page<Article> findAllByUseNo(int useNo, Pageable pageable);
 	
-	//카테고리 별 게시물 목록 조회 (관리자페이지)
-	//Page<Article> findAllByArtCategory(int artCategory, Pageable pageable);
-	
-	//저체 게시물 목록 조회 (관리자페이지)
-	@Query(value = "select a.*, u.useNick, r.regAddr1, r.regAddr2, i.imgSave "
-			+ "from lo.Article a "
-			+ "join lo.Region r on a.regNo = r.regNo "
-			+ "join lo.User u on a.useNo = u.useNo "
-			+ "join lo.ArticleImg i on a.artNo = i.artNo ",
-			countQuery ="select a.*, u.useNick, r.regAddr1, r.regAddr2, i.imgSave "
-					+ "from lo.Article a "
-					+ "join lo.Region r on a.regNo = r.regNo "
-					+ "join lo.User u on a.useNo = u.useNo "
-					+ "join lo.ArticleImg i on a.artNo = i.artNo ",
-			nativeQuery = true)
-	Page<ArticleMapping> findList(Pageable pageable);
-	
-	//카테고리 별 게시물 목록 조회 (관리자페이지)
-	@Query(value = "select a.*, u.useNick, r.regAddr1, r.regAddr2, i.imgSave "
-			+ "from lo.Article a "
-			+ "join lo.Region r on a.regNo = r.regNo "
-			+ "join lo.User u on a.useNo = u.useNo "
-			+ "join lo.ArticleImg i on a.artNo = i.artNo "
-			+ "where a.artCategory = ?1 ",
-			countQuery ="select a.*, u.useNick, r.regAddr1, r.regAddr2, i.imgSave "
-					+ "from lo.Article a "
-					+ "join lo.Region r on a.regNo = r.regNo "
-					+ "join lo.User u on a.useNo = u.useNo "
-					+ "join lo.ArticleImg i on a.artNo = i.artNo "
-					+ "where a.artCategory = ?1 ",
-			nativeQuery = true)
-	Page<ArticleMapping> findAllByArtCategory(int artCategory, Pageable pageable);
+	//카테고리 별 게시물 조회
+	Page<Article> findAllByArtCategory(int artCategory, Pageable pageable);
 	
 	//카테고리, 지역 별 게시물 조회
-	//Page<Article> findAllByArtCategoryAndRegNoStartingWith(int artCategory, String regNo, Pageable pageable);
-	@Query(value = "select a.*, u.useNick, r.regAddr1, r.regAddr2, i.imgSave "
-			+ "from lo.Article a "
-			+ "join lo.Region r on a.regNo = r.regNo "
-			+ "join lo.User u on a.useNo = u.useNo "
-			+ "join lo.ArticleImg i on a.artNo = i.artNo "
-			+ "where a.artCategory = ?1 "
-			+ "and a.regNo like ?2%",
-			countQuery ="select a.*, u.useNick, r.regAddr1, r.regAddr2, i.imgSave "
-					+ "from lo.Article a "
-					+ "join lo.Region r on a.regNo = r.regNo "
-					+ "join lo.User u on a.useNo = u.useNo "
-					+ "join lo.ArticleImg i on a.artNo = i.artNo "
-					+ "where a.artCategory = ?1 "
-					+ "and a.regNo like ?2%",
-			nativeQuery = true)
-	Page<ArticleMapping> findAllByArtCategoryAndRegNoStartingWith(int artCategory, String regNo, Pageable pageable);
+	Page<Article> findAllByArtCategoryAndRegNoStartingWith(int artCategory, String regNo, Pageable pageable);
 	
-	//내가 쓴 게시물 조회(마이페이지)
-	@Query(value = "select a.*, u.useNick, r.regAddr1, r.regAddr2, i.imgSave "
-			+ "from lo.Article a "
-			+ "join lo.Region r on a.regNo = r.regNo "
-			+ "join lo.User u on a.useNo = u.useNo "
-			+ "join lo.ArticleImg i on a.artNo = i.artNo "
-			+ "where u.useNo = ?1",
-			countQuery ="select a.*, u.useNick, r.regAddr1, r.regAddr2, i.imgSave "
-					+ "from lo.Article a "
-					+ "join lo.Region r on a.regNo = r.regNo "
-					+ "join lo.User u on a.useNo = u.useNo "
-					+ "join lo.ArticleImg i on a.artNo = i.artNo "
-					+ "where u.useNo = ?1",
-			nativeQuery = true)
+	//Img테이블에 artNo을 주기 위함
+	@Query(value = "SELECT artNo FROM lo.Article ORDER BY artCreated DESC LIMIT 1", nativeQuery = true)
+	Optional<Integer> findArtNo();	
+	
+	@Query(value = "select a.*, u.useNick, r.regAddr1, r.regAddr2 from lo.Article a join lo.Region r on a.regNo = r.regNo join lo.User u on a.useNo = u.useNo where u.useNo = ?1", nativeQuery = true)
 	Page<ArticleMapping> findAllBy(int useNo, Pageable pageable);
 	
 }

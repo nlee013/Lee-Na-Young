@@ -10,8 +10,6 @@ public interface ArticleMapping {
 	
 	int getUseNo();
 	
-	int getArtCategory();
-	
 	String getUseNick();
 	
 	String getArtSubject();
@@ -25,8 +23,6 @@ public interface ArticleMapping {
 	String getRegAddr1();
 
 	String getRegAddr2();
-	
-	String getImgSave();
 	
 	@JsonFormat(pattern = "YY.MM.dd HH:mm:ss", timezone = "Asia/Seoul")
 	Timestamp getArtCreated();

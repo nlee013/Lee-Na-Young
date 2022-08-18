@@ -1,7 +1,5 @@
 package com.springboot.lookoutside.controller;
 
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.springboot.lookoutside.domain.Article;
 import com.springboot.lookoutside.domain.User;
-import com.springboot.lookoutside.dto.ArticleMapping;
 import com.springboot.lookoutside.dto.ResponseDto;
 import com.springboot.lookoutside.service.ManagerService;
 
@@ -51,18 +48,18 @@ public class ManagerController {
 		return new ResponseDto<String>(HttpStatus.OK.value(), result);
 	}
 
-	//게시물 전체 목록 조회
+	//게시물 전체 조회
 	@GetMapping("/article")
-	public ResponseDto<Map<String, Object>> articleList(@PageableDefault(size=5, sort="artNo", direction = Sort.Direction.DESC) Pageable pageable){
-		Map<String, Object> articleList = managerService.articleList(pageable);
-		return new ResponseDto<Map<String, Object>>(HttpStatus.OK.value(), articleList);
+	public ResponseDto<Page<Article>> articleListCate(@PageableDefault(size=5, sort="artNo", direction = Sort.Direction.DESC) Pageable pageable){
+		Page<Article> articleList = managerService.articleList(pageable);
+		return new ResponseDto<Page<Article>>(HttpStatus.OK.value(), articleList);
 	}
 
-	//게시물 카테고리별 목록 조회
+	//게시물 카테고리별 조회
 	@GetMapping("/article/{artCategory}")
-	public ResponseDto<Map<String, Object>> articleListCate(@PathVariable int artCategory, @PageableDefault(size=5, sort="artNo", direction = Sort.Direction.DESC) Pageable pageable){
-		Map<String, Object> articleList = managerService.articleListCate(artCategory ,pageable);
-		return new ResponseDto<Map<String, Object>>(HttpStatus.OK.value(), articleList);
+	public ResponseDto<Page<Article>> articleListCate(@PathVariable int artCategory, @PageableDefault(size=5, sort="artNo", direction = Sort.Direction.DESC) Pageable pageable){
+		Page<Article> articleList = managerService.articleListCate(artCategory ,pageable);
+		return new ResponseDto<Page<Article>>(HttpStatus.OK.value(), articleList);
 	}
 
 	//게시물 선택 삭제
