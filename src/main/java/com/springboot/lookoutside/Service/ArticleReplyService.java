@@ -58,5 +58,11 @@ public class ArticleReplyService {
 		return replyList;
 	}
 	
-	
+	//마이페이지 - 댓글 목록
+	public List<ArticleReply> replyListMypage(int useNo) {
+		
+		List<ArticleReply> replyListMypage = articleReplyRepository.findAllByUseNo(useNo);
+		
+		return replyListMypage;
+	}
 }
