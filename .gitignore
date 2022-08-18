@@ -6,6 +6,7 @@ build/
 !**/src/test/**/build/
 
 aws.yml
+
 ### STS ###
 .apt_generated
 .classpath
