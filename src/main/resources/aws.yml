@@ -1,11 +1,11 @@
 cloud:
   aws:
     credentials:
-      access-key: AKIAWRAE377D3A6P6MO4
-      secret-key: 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
+      access-key: 
+      secret-key: 
     region:
       static: ap-northeast-2
     s3:
-      bucket: nayoung-look-outside
+      bucket: 
     stack:
       auto: false      
